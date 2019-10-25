@@ -112,7 +112,7 @@ void RenderWindow::init()
     //Moving ball
     temp = new OctahedronBall{3};
     temp->init();
-    temp->mMatrix.setPosition(0, 10.f, 0);
+    temp->mMatrix.setPosition(-10, 3.f, 10);
     temp->startPos = temp->mMatrix.getPosition();
     temp->mAcceleration = gsl::vec3{0.f, -9.81f, 0.f};
     mVisualObjects.push_back(temp);
@@ -139,7 +139,7 @@ void RenderWindow::init()
     std::vector<gsl::Vector3D> terrainPoints;
 
     terrainPoints.reserve(loader.pointCount());
-    for (auto it = loader.begin(); it != loader.end(); it = it + 10)
+    for (auto it = loader.begin(); it != loader.end(); it = it + 100)
     {
         terrainPoints.emplace_back(it->xNorm(), (flipY) ? 1.0 - it->zNorm() : it->zNorm(), it->yNorm());
 
@@ -152,7 +152,7 @@ void RenderWindow::init()
         max.z = (terrainPoints.back().z > max.z) ? terrainPoints.back().z : max.z;
     }
 
-    int xGridSize{8}, zGridSize{8};
+    int xGridSize{50}, zGridSize{50};
     terrainPoints = mapToGrid(terrainPoints, xGridSize, zGridSize, min, max);
     terrainPoints.shrink_to_fit();
 
@@ -449,17 +449,8 @@ void RenderWindow::inputMoveBall(ballDirection direction, float deltaTime)
                         (playerCoords.getY() * mTerrainVertices.at(currentTriangle->index[1]).get_xyz().getY()) +
                         (playerCoords.getZ() * mTerrainVertices.at(currentTriangle->index[2]).get_xyz().getY()));
 
-        qDebug() << playerCoords;
+        //qDebug() << playerCoords;
     }
-
-
-
-//    , gsl::Vector3D(mTerrainVertices.at(currentTriangle->index[0]).get_xyz().getX(), 0.f, mTerrainVertices.at(currentTriangle->index[0]).get_xyz().getZ())
-//    , gsl::Vector3D(mTerrainVertices.at(currentTriangle->index[1]).get_xyz().getX(), 0.f, mTerrainVertices.at(currentTriangle->index[1]).get_xyz().getZ())
-//    , gsl::Vector3D(mTerrainVertices.at(currentTriangle->index[2]).get_xyz().getX(), 0.f, mTerrainVertices.at(currentTriangle->index[2]).get_xyz().getZ())
-
-
-
 
     mVisualObjects[3]->mMatrix.setPosition(mVisualObjects[3]->mMatrix.getPosition().getX(),
             playerHeight + 1.f,
