@@ -16,6 +16,14 @@ class QOpenGLContext;
 class Shader;
 class MainWindow;
 
+enum ballDirection
+{
+    UP = 0,
+    DOWN  = 1,
+    LEFT  = 2,
+    RIGHT  = 3
+};
+
 /// This inherits from QWindow to get access to the Qt functionality and
 /// OpenGL surface.
 /// We also inherit from QOpenGLFunctions, to get access to the OpenGL functions
@@ -39,6 +47,7 @@ public:
 
 
     void moveBall(float deltaTime);
+    void inputMoveBall(ballDirection direction, float deltaTime);
 private slots:
     void render();
 
@@ -69,7 +78,12 @@ private:
     std::vector<Triangle> mTerrainTriangles;
     GLuint mTerrainVAO;
 
+    //For player movement
+    gsl::Vector3D playerCoords;
+    float playerHeight{0.f};
+
     std::pair<bool, gsl::vec3> isColliding(VisualObject *ball, float ballRadius);
+    gsl::Vector3D projectPlane(VisualObject *ball, float ballRadius);
     Triangle* getBallToPlaneTriangle(gsl::vec3 ballPos);
 
     Camera *mCurrentCamera{nullptr};

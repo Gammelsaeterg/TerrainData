@@ -109,6 +109,7 @@ void RenderWindow::init()
     temp->init();
     mVisualObjects.push_back(temp);
 
+    //Moving ball
     temp = new OctahedronBall{3};
     temp->init();
     temp->mMatrix.setPosition(0, 10.f, 0);
@@ -116,9 +117,17 @@ void RenderWindow::init()
     temp->mAcceleration = gsl::vec3{0.f, -9.81f, 0.f};
     mVisualObjects.push_back(temp);
 
+    //Controlling ball
+    temp = new OctahedronBall{3};
+    temp->init();
+    temp->mMatrix.setPosition(0, 5.f, 0);
+    temp->startPos = temp->mMatrix.getPosition();
+    temp->mAcceleration = gsl::vec3{0.f, -9.81f, 0.f};
+    mVisualObjects.push_back(temp);
+
     //********************** Set up camera **********************
     mCurrentCamera = new Camera();
-    mCurrentCamera->setPosition(gsl::Vector3D(-1.f, -.5f, -5.f));
+    mCurrentCamera->setPosition(gsl::Vector3D(-0.f, -.5f, -31.f));
 
     //********************** Terrain Data **************************
     gsl::LASLoader loader{"../Oblig3/Mountain.las"};
@@ -143,7 +152,7 @@ void RenderWindow::init()
         max.z = (terrainPoints.back().z > max.z) ? terrainPoints.back().z : max.z;
     }
 
-    int xGridSize{5}, zGridSize{5};
+    int xGridSize{8}, zGridSize{8};
     terrainPoints = mapToGrid(terrainPoints, xGridSize, zGridSize, min, max);
     terrainPoints.shrink_to_fit();
 
@@ -151,7 +160,7 @@ void RenderWindow::init()
 
     mTerrainVertices.reserve(terrainPoints.size());
     std::transform(terrainPoints.begin(), terrainPoints.end(), std::back_inserter(mTerrainVertices), [](const gsl::Vector3D& point){
-        return Vertex{(point - 0.5f) * 40.f, {0.18f, 0.33f, 0.8f}, {0, 0}};
+        return Vertex{(point - 0.5f) * 40.f, {point.getZ(), point.getY(), 0.0f}, {0, 0}};
     });
 
     std::cout << "Point count: " << mTerrainVertices.size() << std::endl;
@@ -230,6 +239,7 @@ void RenderWindow::render()
     handleInput();
 
     mCurrentCamera->update();
+    //qDebug() << mCurrentCamera->position().getX() << mCurrentCamera->position().getY() << mCurrentCamera->position().getZ();
 
     const float deltaTime = mTimeStart.nsecsElapsed() / 1000000000.f;
 
@@ -257,6 +267,13 @@ void RenderWindow::render()
         glUniformMatrix4fv( mMatrixUniform0, 1, GL_TRUE, mVisualObjects[2]->mMatrix.constData());
         mVisualObjects[2]->draw();
 
+        glUseProgram(mShaderProgram[0]->getProgram());
+        glUniformMatrix4fv( vMatrixUniform0, 1, GL_TRUE, mCurrentCamera->mViewMatrix.constData());
+        glUniformMatrix4fv( pMatrixUniform0, 1, GL_TRUE, mCurrentCamera->mProjectionMatrix.constData());
+        glUniformMatrix4fv( mMatrixUniform0, 1, GL_TRUE, mVisualObjects[3]->mMatrix.constData());
+        mVisualObjects[3]->draw();
+
+
 //        glUseProgram(mShaderProgram[1]->getProgram());
 //        glUniformMatrix4fv( vMatrixUniform1, 1, GL_TRUE, mCurrentCamera->mViewMatrix.constData());
 //        glUniformMatrix4fv( pMatrixUniform1, 1, GL_TRUE, mCurrentCamera->mProjectionMatrix.constData());
@@ -273,6 +290,24 @@ void RenderWindow::render()
         glBindVertexArray(mTerrainVAO);
         // glDrawArrays(GL_POINTS, 0, mTerrainVertices.size());
         glDrawElements(GL_TRIANGLES, mTerrainTriangles.size() * 3, GL_UNSIGNED_INT, 0);
+    }
+
+
+    if (mInput.W && !mInput.RMB)
+    {
+       inputMoveBall(ballDirection::UP, deltaTime);
+    }
+    if (mInput.S && !mInput.RMB)
+    {
+        inputMoveBall(ballDirection::DOWN, deltaTime);
+    }
+    if (mInput.D && !mInput.RMB)
+    {
+        inputMoveBall(ballDirection::RIGHT, deltaTime);
+    }
+    if (mInput.A && !mInput.RMB)
+    {
+        inputMoveBall(ballDirection::LEFT, deltaTime);
     }
 
     //Calculate framerate before
@@ -361,7 +396,7 @@ void RenderWindow::setupTextureShader(int shaderIndex)
 
 void RenderWindow::moveBall(float deltaTime)
 {
-    auto& ball = *mVisualObjects[2];
+    auto& ball = *mVisualObjects[2]; //Moving ball
     ball.velocity += ball.mAcceleration * deltaTime;
     auto pos = ball.mMatrix.getPosition() + ball.velocity * deltaTime;
 
@@ -379,6 +414,56 @@ void RenderWindow::moveBall(float deltaTime)
 
     ball.mMatrix.setPosition(pos.x, pos.y, pos.z);
     // std::cout << "velocity: " << ball.velocity << std::endl;
+}
+
+void RenderWindow::inputMoveBall(ballDirection direction, float deltaTime)
+{
+    if (direction == ballDirection::UP)
+    {
+        mVisualObjects[3]->mMatrix.translate(gsl::Vector3D(0.f, 0.f, -5.f) * deltaTime);
+    }
+    if (direction == ballDirection::DOWN)
+    {
+        mVisualObjects[3]->mMatrix.translate(gsl::Vector3D(0.f, 0.f, 5.f) * deltaTime);
+    }
+    if (direction == ballDirection::RIGHT)
+    {
+        mVisualObjects[3]->mMatrix.translate(gsl::Vector3D(5.f, -0.f, -0.f) * deltaTime);
+    }
+    if (direction == ballDirection::LEFT)
+    {
+        mVisualObjects[3]->mMatrix.translate(gsl::Vector3D(-5.f, 0.f, 0.f) * deltaTime);
+    }
+
+    Triangle* currentTriangle = getBallToPlaneTriangle(gsl::Vector3D(mVisualObjects[3]->mMatrix.getPosition().getX(), 0.f, mVisualObjects[3]->mMatrix.getPosition().getZ()));
+    if (currentTriangle != nullptr)
+    {
+        playerCoords = gsl::barCoord(
+                      gsl::Vector3D(mVisualObjects[3]->mMatrix.getPosition().getX(), 0.f, mVisualObjects[3]->mMatrix.getPosition().getZ())
+                    , gsl::Vector3D(mTerrainVertices.at(currentTriangle->index[0]).get_xyz().getX(), 0.f, mTerrainVertices.at(currentTriangle->index[0]).get_xyz().getZ())
+                    , gsl::Vector3D(mTerrainVertices.at(currentTriangle->index[1]).get_xyz().getX(), 0.f, mTerrainVertices.at(currentTriangle->index[1]).get_xyz().getZ())
+                    , gsl::Vector3D(mTerrainVertices.at(currentTriangle->index[2]).get_xyz().getX(), 0.f, mTerrainVertices.at(currentTriangle->index[2]).get_xyz().getZ())
+                      );
+
+        playerHeight = ((playerCoords.getX() * mTerrainVertices.at(currentTriangle->index[0]).get_xyz().getY()) +
+                        (playerCoords.getY() * mTerrainVertices.at(currentTriangle->index[1]).get_xyz().getY()) +
+                        (playerCoords.getZ() * mTerrainVertices.at(currentTriangle->index[2]).get_xyz().getY()));
+
+        qDebug() << playerCoords;
+    }
+
+
+
+//    , gsl::Vector3D(mTerrainVertices.at(currentTriangle->index[0]).get_xyz().getX(), 0.f, mTerrainVertices.at(currentTriangle->index[0]).get_xyz().getZ())
+//    , gsl::Vector3D(mTerrainVertices.at(currentTriangle->index[1]).get_xyz().getX(), 0.f, mTerrainVertices.at(currentTriangle->index[1]).get_xyz().getZ())
+//    , gsl::Vector3D(mTerrainVertices.at(currentTriangle->index[2]).get_xyz().getX(), 0.f, mTerrainVertices.at(currentTriangle->index[2]).get_xyz().getZ())
+
+
+
+
+    mVisualObjects[3]->mMatrix.setPosition(mVisualObjects[3]->mMatrix.getPosition().getX(),
+            playerHeight + 1.f,
+            mVisualObjects[3]->mMatrix.getPosition().getZ());
 }
 
 std::pair<bool, gsl::vec3> RenderWindow::isColliding(VisualObject* ball, float ballRadius)
@@ -607,6 +692,8 @@ void RenderWindow::handleInput()
 
 void RenderWindow::keyPressEvent(QKeyEvent *event)
 {
+    const float deltaTime = mTimeStart.nsecsElapsed() / 1000000000.f;
+
     if (event->key() == Qt::Key_Escape) //Shuts down whole program
     {
         mMainWindow->close();
