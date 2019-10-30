@@ -25,7 +25,7 @@ namespace gsl
 
     //Curves
     Vector3D bezierCurve(std::vector<Vector3D> points, GLfloat t, unsigned long long degree = 3);
-    Vector3D bSpline(const std::vector<Vector3D> &points, const std::vector<GLfloat> &t, GLfloat x, unsigned long long degree = 3);
+    Vector3D bSpline(const std::vector<Vector3D> &points, const std::vector<GLfloat> &knots, GLfloat t, unsigned long long degree = 3);
 
     Vector3D barCoord(const vec3 &p, const vec3 &a, const vec3 &b, const vec3 &c);
     float crossScalar(const vec3& a, const vec3& b);

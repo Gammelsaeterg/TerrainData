@@ -41,18 +41,18 @@ namespace gsl
     }
 
     //Calculates the points on a basis spline curve. Input t from 0 to 1.
-    Vector3D bSpline(const std::vector<Vector3D>& points, const std::vector<GLfloat> &t, GLfloat x, unsigned long long degree)
+    Vector3D bSpline(const std::vector<Vector3D>& points, const std::vector<GLfloat> &knots, GLfloat t, unsigned long long degree)
     {
         //CALCULATE VALID KNOT INTERVAL 'MY'
         unsigned long long my;
         for (my = 0; my < points.size(); my++)
         {
-            if (x < t[my+1])
+            if (t < knots[my+1])
                 break;
         }
 
         //CALCULATE BASIS FUNCTIONS
-        std::vector<GLfloat> basis(t.size());
+        std::vector<GLfloat> basis(knots.size());
         for (unsigned long long j = 0; j <= degree; j++)
         {
             for (unsigned long long i = (my-j); i <= my; i++)
@@ -66,12 +66,12 @@ namespace gsl
                     GLfloat left, right;
 
                     if (basis[i] != 0.f)
-                        left = ((x - t[i]) / (t[i+j] - t[i])) * basis[i];
+                        left = ((t - knots[i]) / (knots[i+j] - knots[i])) * basis[i];
                     else
                         left = 0.f;
 
                     if (basis[i+1] != 0.f)
-                        right = ((t[i+j+1] - x) / (t[i+j+1] - t[i+1])) * basis[i+1];
+                        right = ((knots[i+j+1] - t) / (knots[i+j+1] - knots[i+1])) * basis[i+1];
                     else
                         right = 0.f;
 
@@ -203,5 +203,6 @@ namespace gsl
     {
         return ((b * a) / (b * b)) * b;
     }
+
 
 } //namespace

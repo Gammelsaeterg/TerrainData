@@ -15,6 +15,7 @@
 #include "xyz.h"
 #include "trianglesurface.h"
 #include "octahedronball.h"
+#include "bsplinecurve.h"
 
 #include "LAS/lasloader.h"
 
@@ -109,7 +110,7 @@ void RenderWindow::init()
     temp->init();
     mVisualObjects.push_back(temp);
 
-    //Moving ball
+    //Moving gravity ball
     temp = new OctahedronBall{3};
     temp->init();
     temp->mMatrix.setPosition(-10, 3.f, 10);
@@ -123,6 +124,11 @@ void RenderWindow::init()
     temp->mMatrix.setPosition(0, 5.f, 0);
     temp->startPos = temp->mMatrix.getPosition();
     temp->mAcceleration = gsl::vec3{0.f, -9.81f, 0.f};
+    mVisualObjects.push_back(temp);
+
+    //Curve test
+    temp = new BSplineCurve;
+    temp->init();
     mVisualObjects.push_back(temp);
 
     //********************** Set up camera **********************
