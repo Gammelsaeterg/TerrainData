@@ -4,7 +4,7 @@
 BSplineCurve::BSplineCurve()
 {
     createDefaultSplineCurve();
-    addCurveToVertices(20);
+    addCurveToVertices(50);
 }
 
 void BSplineCurve::createDefaultSplineCurve()

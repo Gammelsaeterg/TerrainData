@@ -129,7 +129,7 @@ void RenderWindow::init()
     //Curve test
     temp = new BSplineCurve();
     temp->init();
-    temp->mMatrix.scale(10);
+    temp->mMatrix.scale(5);
     mVisualObjects.push_back(temp);
 
     //********************** Set up camera **********************
