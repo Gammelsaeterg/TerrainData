@@ -3,6 +3,7 @@
 
 VisualObject::VisualObject()
 {
+    mMatrix.setToIdentity();
 }
 
 VisualObject::~VisualObject()

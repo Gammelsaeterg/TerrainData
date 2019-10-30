@@ -127,8 +127,9 @@ void RenderWindow::init()
     mVisualObjects.push_back(temp);
 
     //Curve test
-    temp = new BSplineCurve;
+    temp = new BSplineCurve();
     temp->init();
+    temp->mMatrix.scale(10);
     mVisualObjects.push_back(temp);
 
     //********************** Set up camera **********************
@@ -264,9 +265,6 @@ void RenderWindow::render()
         mVisualObjects[0]->draw();
 
         glUseProgram(mShaderProgram[0]->getProgram());
-
-
-
         moveBall(deltaTime);
         glUniformMatrix4fv( vMatrixUniform0, 1, GL_TRUE, mCurrentCamera->mViewMatrix.constData());
         glUniformMatrix4fv( pMatrixUniform0, 1, GL_TRUE, mCurrentCamera->mProjectionMatrix.constData());
@@ -280,7 +278,7 @@ void RenderWindow::render()
         mVisualObjects[3]->draw();
 
         //bSplines
-        glUseProgram(mShaderProgram[0]->getProgram());
+        glUseProgram(mShaderProgram[1]->getProgram());
         glUniformMatrix4fv( vMatrixUniform0, 1, GL_TRUE, mCurrentCamera->mViewMatrix.constData());
         glUniformMatrix4fv( pMatrixUniform0, 1, GL_TRUE, mCurrentCamera->mProjectionMatrix.constData());
         glUniformMatrix4fv( mMatrixUniform0, 1, GL_TRUE, mVisualObjects[4]->mMatrix.constData());
