@@ -71,5 +71,5 @@ void BSplineCurve::init()
 void BSplineCurve::draw()
 {
     glBindVertexArray( mVAO );
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, mVertices.size());
+    glDrawArrays(GL_LINE_STRIP, 0, mVertices.size());
 }

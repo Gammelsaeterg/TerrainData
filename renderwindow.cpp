@@ -169,7 +169,7 @@ void RenderWindow::init()
         return Vertex{(point - 0.5f) * 40.f, {point.getZ(), point.getY(), 0.0f}, {0, 0}};
     });
 
-    std::cout << "Point count: " << mTerrainVertices.size() << std::endl;
+    //std::cout << "Point count: " << mTerrainVertices.size() << std::endl;
 
     // Create indices
     mTerrainTriangles.reserve((xGridSize - 1) * (zGridSize - 1) * 2);
@@ -185,9 +185,9 @@ void RenderWindow::init()
                                         }
                                         });
 
-            std::cout << "Added a triangle with index: " << mTerrainTriangles.back().index[0] << ", " << mTerrainTriangles.back().index[1]
-                      << ", " << mTerrainTriangles.back().index[2] << " and neighbours: " << mTerrainTriangles.back().neighbour[0]
-                      << ", " << mTerrainTriangles.back().neighbour[1] << ", " << mTerrainTriangles.back().neighbour[2] << std::endl;
+//            std::cout << "Added a triangle with index: " << mTerrainTriangles.back().index[0] << ", " << mTerrainTriangles.back().index[1]
+//                      << ", " << mTerrainTriangles.back().index[2] << " and neighbours: " << mTerrainTriangles.back().neighbour[0]
+//                      << ", " << mTerrainTriangles.back().neighbour[1] << ", " << mTerrainTriangles.back().neighbour[2] << std::endl;
 
             mTerrainTriangles.push_back({{i + 1, i + xGridSize, i + 1 + xGridSize} ,
                                         {
@@ -197,13 +197,13 @@ void RenderWindow::init()
                                         }
                                         });
 
-            std::cout << "Added a triangle with index: " << mTerrainTriangles.back().index[0] << ", " << mTerrainTriangles.back().index[1]
-                      << ", " << mTerrainTriangles.back().index[2] << " and neighbours: " << mTerrainTriangles.back().neighbour[0]
-                      << ", " << mTerrainTriangles.back().neighbour[1] << ", " << mTerrainTriangles.back().neighbour[2] << std::endl;
+//            std::cout << "Added a triangle with index: " << mTerrainTriangles.back().index[0] << ", " << mTerrainTriangles.back().index[1]
+//                      << ", " << mTerrainTriangles.back().index[2] << " and neighbours: " << mTerrainTriangles.back().neighbour[0]
+//                      << ", " << mTerrainTriangles.back().neighbour[1] << ", " << mTerrainTriangles.back().neighbour[2] << std::endl;
         }
     }
 
-    std::cout << "Triangle count: " << mTerrainTriangles.size() << std::endl;
+    //std::cout << "Triangle count: " << mTerrainTriangles.size() << std::endl;
 
 
     glGenVertexArrays(1, &mTerrainVAO);
@@ -279,13 +279,12 @@ void RenderWindow::render()
         glUniformMatrix4fv( mMatrixUniform0, 1, GL_TRUE, mVisualObjects[3]->mMatrix.constData());
         mVisualObjects[3]->draw();
 
-
-//        glUseProgram(mShaderProgram[1]->getProgram());
-//        glUniformMatrix4fv( vMatrixUniform1, 1, GL_TRUE, mCurrentCamera->mViewMatrix.constData());
-//        glUniformMatrix4fv( pMatrixUniform1, 1, GL_TRUE, mCurrentCamera->mProjectionMatrix.constData());
-//        glUniformMatrix4fv( mMatrixUniform1, 1, GL_TRUE, mVisualObjects[1]->mMatrix.constData());
-//        glUniform1i(mTextureUniform, 1);
-//        mVisualObjects[1]->draw();
+        //bSplines
+        glUseProgram(mShaderProgram[0]->getProgram());
+        glUniformMatrix4fv( vMatrixUniform0, 1, GL_TRUE, mCurrentCamera->mViewMatrix.constData());
+        glUniformMatrix4fv( pMatrixUniform0, 1, GL_TRUE, mCurrentCamera->mProjectionMatrix.constData());
+        glUniformMatrix4fv( mMatrixUniform0, 1, GL_TRUE, mVisualObjects[4]->mMatrix.constData());
+        mVisualObjects[4]->draw();
 
         glUseProgram(mShaderProgram[0]->getProgram());
         gsl::Matrix4x4 modelMat{};
@@ -296,6 +295,7 @@ void RenderWindow::render()
         glBindVertexArray(mTerrainVAO);
         // glDrawArrays(GL_POINTS, 0, mTerrainVertices.size());
         glDrawElements(GL_TRIANGLES, mTerrainTriangles.size() * 3, GL_UNSIGNED_INT, 0);
+
     }
 
 
