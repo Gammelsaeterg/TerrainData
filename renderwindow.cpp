@@ -82,9 +82,9 @@ void RenderWindow::init()
     //NB: hardcoded path to files! You have to change this if you change directories for the project.
     //Qt makes a build-folder besides the project folder. That is why we go down one directory
     // (out of the build-folder) and then up into the project folder.
-    mShaderProgram[0] = new Shader("../Oblig3/plainvertex.vert", "../Oblig3/plainfragment.frag");
+    mShaderProgram[0] = new Shader("../TerrainData/plainvertex.vert", "../TerrainData/plainfragment.frag");
     qDebug() << "Plain shader program id: " << mShaderProgram[0]->getProgram();
-    mShaderProgram[1]= new Shader("../Oblig3/texturevertex.vert", "../Oblig3/texturefragmet.frag");
+    mShaderProgram[1]= new Shader("../TerrainData/texturevertex.vert", "../TerrainData/texturefragmet.frag");
     qDebug() << "Texture shader program id: " << mShaderProgram[1]->getProgram();
 
     setupPlainShader(0);
@@ -92,7 +92,7 @@ void RenderWindow::init()
 
     //**********************  Texture stuff: **********************
     mTexture[0] = new Texture();
-    mTexture[1] = new Texture("../Oblig3/Assets/hund.bmp");
+    mTexture[1] = new Texture("../TerrainData/Assets/hund.bmp");
 
     //Set the textures loaded to a texture unit
     glActiveTexture(GL_TEXTURE0);
@@ -396,7 +396,7 @@ void RenderWindow::setupTextureShader(int shaderIndex)
 float RenderWindow::getTerrainHeight(gsl::Vector3D inLocation)
 {
     float tempHeight;
-    Triangle* currentTriangle = getBallToPlaneTriangle(gsl::Vector3D(mVisualObjects[3]->mMatrix.getPosition().getX(), 0.f, mVisualObjects[3]->mMatrix.getPosition().getZ()));
+    Triangle* currentTriangle = getBallToPlaneTriangle(gsl::Vector3D(inLocation.getX(), 0.f, inLocation.getZ()));
     if (currentTriangle != nullptr)
     {
         gsl::Vector3D pointCoords = gsl::barCoord(

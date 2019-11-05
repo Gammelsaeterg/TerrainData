@@ -62,7 +62,7 @@ void BSplineCurve::setNewHeights(std::vector<float> inFloats)
 
     for (int i = 0; i < mVertices.size(); ++i)
     {
-        mVertices[i].set_xyz(mVertices[i].get_xyz().getX(), inFloats[i], mVertices[i].get_xyz().getY());
+        mVertices[i].set_xyz(mVertices[i].get_xyz().getX(), inFloats[i], mVertices[i].get_xyz().getZ());
     }
 }
 
