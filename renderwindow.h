@@ -77,6 +77,7 @@ private:
 
     std::vector<Triangle> mTerrainTriangles;
     GLuint mTerrainVAO;
+    float getTerrainHeight(gsl::Vector3D inLocation);
 
     //For player movement
     gsl::Vector3D playerCoords;
