@@ -222,19 +222,14 @@ void RenderWindow::init()
 
     //Curve test
     temp = new BSplineCurve();
-    std::vector<gsl::Vector3D> tempLocs = static_cast<BSplineCurve*>(temp)->getSplineVerticeLocations();
-    std::vector<float> tempHeights;
-    for (auto locs : tempLocs)
-    {
-        float tempLoc = getTerrainHeight(gsl::Vector3D(locs.getX(), 0.f, locs.getZ()));
-        tempHeights.push_back(tempLoc);
-    }
-    static_cast<BSplineCurve*>(temp)->setNewHeights(tempHeights);
-    temp->init();
-    mVisualObjects.push_back(temp);
-
-    // Testing Trophy
-    temp = new Trophy();
+//    std::vector<gsl::Vector3D> tempLocs = static_cast<BSplineCurve*>(temp)->getSplineVerticeLocations();
+//    std::vector<float> tempHeights;
+//    for (auto locs : tempLocs)
+//    {
+//        float tempLoc = getTerrainHeight(gsl::Vector3D(locs.getX(), 0.f, locs.getZ()));
+//        tempHeights.push_back(tempLoc);
+//    }
+//    static_cast<BSplineCurve*>(temp)->setNewHeights(tempHeights);
     temp->init();
     mVisualObjects.push_back(temp);
 
@@ -244,6 +239,11 @@ void RenderWindow::init()
     temp->mMatrix.setPosition(0, 5.f, 0);
     temp->startPos = temp->mMatrix.getPosition();
     temp->mAcceleration = gsl::vec3{0.f, -9.81f, 0.f};
+    mVisualObjects.push_back(temp);
+
+    // Testing Trophy
+    temp = new Trophy();
+    temp->init();
     mVisualObjects.push_back(temp);
 }
 
@@ -273,8 +273,12 @@ void RenderWindow::render()
         glUniformMatrix4fv( mMatrixUniform0, 1, GL_TRUE, object->mMatrix.constData());
         object->draw();
     }
+    //Spline [4], NPC ball [5] TEMP
     // For the player character to be able to move
     moveBall(deltaTime);
+
+    //Move NPC
+    moveBallAlongSpline(static_cast<BSplineCurve*>(mVisualObjects[4]), mVisualObjects[6]);
 
     // This is for the terrain.
     {
@@ -410,9 +414,48 @@ float RenderWindow::getTerrainHeight(gsl::Vector3D inLocation)
     }
     else
     {
-        qDebug() << "oof";
+        //qDebug() << "oof";
     }
     return tempHeight;
+}
+
+void RenderWindow::moveBallAlongSpline(BSplineCurve *curve, VisualObject *objectToMove)
+{
+    float deltaTime = mTimeStart.nsecsElapsed() / 10000000.f;
+    deltaTime = deltaTime / 3.f;
+
+    if (timeCounter > 1.f)
+    {
+        timeCounter = 0;
+    }
+    timeCounter += deltaTime;
+
+
+    Triangle* currentTriangle = getBallToPlaneTriangle(gsl::Vector3D(curve->getCurrentSplineLocation(timeCounter).getX(), 0.f, curve->getCurrentSplineLocation(timeCounter).getZ()));
+    if (currentTriangle != nullptr)
+    {
+        gsl::Vector3D pointCoords = gsl::barCoord(
+                    gsl::Vector3D(curve->getCurrentSplineLocation(timeCounter).getX(), 0.f, curve->getCurrentSplineLocation(timeCounter).getZ())
+                    , gsl::Vector3D(mTerrainVertices.at(currentTriangle->index[0]).get_xyz().getX(), 0.f, mTerrainVertices.at(currentTriangle->index[0]).get_xyz().getZ())
+                , gsl::Vector3D(mTerrainVertices.at(currentTriangle->index[1]).get_xyz().getX(), 0.f, mTerrainVertices.at(currentTriangle->index[1]).get_xyz().getZ())
+                , gsl::Vector3D(mTerrainVertices.at(currentTriangle->index[2]).get_xyz().getX(), 0.f, mTerrainVertices.at(currentTriangle->index[2]).get_xyz().getZ())
+                );
+
+
+        heightAtSpline = ((pointCoords.getX() * mTerrainVertices.at(currentTriangle->index[0]).get_xyz().getY()) +
+                (pointCoords.getY() * mTerrainVertices.at(currentTriangle->index[1]).get_xyz().getY()) +
+                (pointCoords.getZ() * mTerrainVertices.at(currentTriangle->index[2]).get_xyz().getY()));
+    }
+    else
+    {
+        //qDebug() << "oof";
+    }
+
+
+    objectToMove->mMatrix.setPosition(curve->getCurrentSplineLocation(timeCounter).getX(), heightAtSpline, curve->getCurrentSplineLocation(timeCounter).getZ());
+
+
+    //qDebug() << timeCounter;
 }
 
 void RenderWindow::moveBall(float deltaTime)

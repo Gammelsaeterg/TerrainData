@@ -14,6 +14,7 @@
 
 class QOpenGLContext;
 class Shader;
+class BSplineCurve;
 class MainWindow;
 
 enum ballDirection
@@ -78,6 +79,10 @@ private:
     std::vector<Triangle> mTerrainTriangles;
     GLuint mTerrainVAO;
     float getTerrainHeight(gsl::Vector3D inLocation);
+
+    float timeCounter{0};
+    void moveBallAlongSpline(BSplineCurve* curve, VisualObject* objectToMove);
+    float heightAtSpline{0};
 
     //For player movement
     gsl::Vector3D playerCoords;
