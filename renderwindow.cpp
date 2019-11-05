@@ -16,6 +16,7 @@
 #include "trianglesurface.h"
 #include "octahedronball.h"
 #include "bsplinecurve.h"
+#include "trophy.h"
 
 #include "LAS/lasloader.h"
 
@@ -126,6 +127,10 @@ void RenderWindow::init()
     temp->mAcceleration = gsl::vec3{0.f, -9.81f, 0.f};
     mVisualObjects.push_back(temp);
 
+    // Testing Trophy
+    temp = new Trophy();
+    temp->init();
+    mVisualObjects.push_back(temp);
 
 
     //********************** Set up camera **********************
@@ -133,7 +138,7 @@ void RenderWindow::init()
     mCurrentCamera->setPosition(gsl::Vector3D(-0.f, -.5f, -31.f));
 
     //********************** Terrain Data **************************
-    gsl::LASLoader loader{"../Oblig3/Mountain.las"};
+    gsl::LASLoader loader{"../TerrainData/Mountain.las"};
 
     //Terrain stuff
     bool flipY = true;
@@ -218,7 +223,6 @@ void RenderWindow::init()
     glBindVertexArray(0);
 
     // glPointSize(10.f);
-
 
     //Curve test
     temp = new BSplineCurve();
