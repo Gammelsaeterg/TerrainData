@@ -22,6 +22,7 @@ SOURCES += main.cpp \
     mainwindow.cpp \
     triangle.cpp \
     texture.cpp \
+    trophy.cpp \
     vertex.cpp \
     xyz.cpp \
     trianglesurface.cpp \
@@ -45,6 +46,7 @@ HEADERS += \
     mainwindow.h \
     triangle.h \
     texture.h \
+    trophy.h \
     vertex.h \
     xyz.h \
     gltypes.h \
