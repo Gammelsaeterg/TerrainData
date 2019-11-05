@@ -233,17 +233,30 @@ void RenderWindow::init()
     temp->init();
     mVisualObjects.push_back(temp);
 
-    // Testing Trophy
-    temp = new Trophy();
-    temp->init();
-    mVisualObjects.push_back(temp);
-
     //NPC ball
     temp = new OctahedronBall{3};
     temp->init();
     temp->mMatrix.setPosition(0, 5.f, 0);
     temp->startPos = temp->mMatrix.getPosition();
     temp->mAcceleration = gsl::vec3{0.f, -9.81f, 0.f};
+    mVisualObjects.push_back(temp);
+
+    // Testing Trophy
+    temp = new Trophy();
+    temp->init();
+    temp->mMatrix.setPosition(18, 19.7f, -19);
+    mVisualObjects.push_back(temp);
+
+    // Testing Trophy
+    temp = new Trophy();
+    temp->init();
+    temp->mMatrix.setPosition(18, 8.12f, 18);
+    mVisualObjects.push_back(temp);
+
+    // Testing Trophy
+    temp = new Trophy();
+    temp->init();
+    temp->mMatrix.setPosition(-19, 3.9f, -19);
     mVisualObjects.push_back(temp);
 }
 
