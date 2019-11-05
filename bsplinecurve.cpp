@@ -22,12 +22,17 @@ void BSplineCurve::createDefaultSplineCurve()
     knots.push_back(1);
     knots.push_back(1);
     knots.push_back(1);
+
+    //temporariliy hard coded
 }
 
 void BSplineCurve::addCurveToVertices(int subdivisions)
 {
     gsl::Vector3D temp;
     Vertex tempVertex;
+
+
+
     for (int i = 0; i < subdivisions; ++i)
     {
         temp = gsl::bSpline(controlPoints, knots, i/static_cast<float>(subdivisions), 3);
@@ -64,7 +69,7 @@ void BSplineCurve::init()
 
     glBindVertexArray(0);
 
-    glLineWidth(3);
+    //glLineWidth(3);
     glPointSize(5);
 }
 
