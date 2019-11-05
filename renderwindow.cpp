@@ -127,11 +127,6 @@ void RenderWindow::init()
     temp->mAcceleration = gsl::vec3{0.f, -9.81f, 0.f};
     mVisualObjects.push_back(temp);
 
-    // Testing Trophy
-    temp = new Trophy();
-    temp->init();
-    mVisualObjects.push_back(temp);
-
 
     //********************** Set up camera **********************
     mCurrentCamera = new Camera();
@@ -195,6 +190,7 @@ void RenderWindow::init()
 //                      << ", " << mTerrainTriangles.back().index[2] << " and neighbours: " << mTerrainTriangles.back().neighbour[0]
 //                      << ", " << mTerrainTriangles.back().neighbour[1] << ", " << mTerrainTriangles.back().neighbour[2] << std::endl;
         }
+
     }
 
     //std::cout << "Triangle count: " << mTerrainTriangles.size() << std::endl;
@@ -236,6 +232,19 @@ void RenderWindow::init()
     static_cast<BSplineCurve*>(temp)->setNewHeights(tempHeights);
     temp->init();
     mVisualObjects.push_back(temp);
+
+    // Testing Trophy
+    temp = new Trophy();
+    temp->init();
+    mVisualObjects.push_back(temp);
+
+    //NPC ball
+    temp = new OctahedronBall{3};
+    temp->init();
+    temp->mMatrix.setPosition(0, 5.f, 0);
+    temp->startPos = temp->mMatrix.getPosition();
+    temp->mAcceleration = gsl::vec3{0.f, -9.81f, 0.f};
+    mVisualObjects.push_back(temp);
 }
 
 ///Called each frame - doing the rendering
@@ -255,33 +264,50 @@ void RenderWindow::render()
     //to clear the screen for each redraw
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    //******** This should be done with a loop!
+
+    for (auto object : mVisualObjects)
     {
         glUseProgram(mShaderProgram[0]->getProgram());
         glUniformMatrix4fv( vMatrixUniform0, 1, GL_TRUE, mCurrentCamera->mViewMatrix.constData());
         glUniformMatrix4fv( pMatrixUniform0, 1, GL_TRUE, mCurrentCamera->mProjectionMatrix.constData());
-        glUniformMatrix4fv( mMatrixUniform0, 1, GL_TRUE, mVisualObjects[0]->mMatrix.constData());
-        mVisualObjects[0]->draw();
+        glUniformMatrix4fv( mMatrixUniform0, 1, GL_TRUE, object->mMatrix.constData());
+        object->draw();
+    }
 
-        glUseProgram(mShaderProgram[0]->getProgram());
+    //******** This should be done with a loop!
+    {
+//        glUseProgram(mShaderProgram[0]->getProgram());
+//        glUniformMatrix4fv( vMatrixUniform0, 1, GL_TRUE, mCurrentCamera->mViewMatrix.constData());
+//        glUniformMatrix4fv( pMatrixUniform0, 1, GL_TRUE, mCurrentCamera->mProjectionMatrix.constData());
+//        glUniformMatrix4fv( mMatrixUniform0, 1, GL_TRUE, mVisualObjects[0]->mMatrix.constData());
+//        mVisualObjects[0]->draw();
+
+//        glUseProgram(mShaderProgram[0]->getProgram());
         moveBall(deltaTime);
-        glUniformMatrix4fv( vMatrixUniform0, 1, GL_TRUE, mCurrentCamera->mViewMatrix.constData());
-        glUniformMatrix4fv( pMatrixUniform0, 1, GL_TRUE, mCurrentCamera->mProjectionMatrix.constData());
-        glUniformMatrix4fv( mMatrixUniform0, 1, GL_TRUE, mVisualObjects[2]->mMatrix.constData());
-        mVisualObjects[2]->draw();
+//        glUniformMatrix4fv( vMatrixUniform0, 1, GL_TRUE, mCurrentCamera->mViewMatrix.constData());
+//        glUniformMatrix4fv( pMatrixUniform0, 1, GL_TRUE, mCurrentCamera->mProjectionMatrix.constData());
+//        glUniformMatrix4fv( mMatrixUniform0, 1, GL_TRUE, mVisualObjects[2]->mMatrix.constData());
+//        mVisualObjects[2]->draw();
 
-        glUseProgram(mShaderProgram[0]->getProgram());
-        glUniformMatrix4fv( vMatrixUniform0, 1, GL_TRUE, mCurrentCamera->mViewMatrix.constData());
-        glUniformMatrix4fv( pMatrixUniform0, 1, GL_TRUE, mCurrentCamera->mProjectionMatrix.constData());
-        glUniformMatrix4fv( mMatrixUniform0, 1, GL_TRUE, mVisualObjects[3]->mMatrix.constData());
-        mVisualObjects[3]->draw();
+//        glUseProgram(mShaderProgram[0]->getProgram());
+//        glUniformMatrix4fv( vMatrixUniform0, 1, GL_TRUE, mCurrentCamera->mViewMatrix.constData());
+//        glUniformMatrix4fv( pMatrixUniform0, 1, GL_TRUE, mCurrentCamera->mProjectionMatrix.constData());
+//        glUniformMatrix4fv( mMatrixUniform0, 1, GL_TRUE, mVisualObjects[3]->mMatrix.constData());
+//        mVisualObjects[3]->draw();
 
-        //bSplines
-        glUseProgram(mShaderProgram[1]->getProgram());
-        glUniformMatrix4fv( vMatrixUniform0, 1, GL_TRUE, mCurrentCamera->mViewMatrix.constData());
-        glUniformMatrix4fv( pMatrixUniform0, 1, GL_TRUE, mCurrentCamera->mProjectionMatrix.constData());
-        glUniformMatrix4fv( mMatrixUniform0, 1, GL_TRUE, mVisualObjects[4]->mMatrix.constData());
-        mVisualObjects[4]->draw();
+//        //bSplines [4]
+//        glUseProgram(mShaderProgram[1]->getProgram());
+//        glUniformMatrix4fv( vMatrixUniform0, 1, GL_TRUE, mCurrentCamera->mViewMatrix.constData());
+//        glUniformMatrix4fv( pMatrixUniform0, 1, GL_TRUE, mCurrentCamera->mProjectionMatrix.constData());
+//        glUniformMatrix4fv( mMatrixUniform0, 1, GL_TRUE, mVisualObjects[4]->mMatrix.constData());
+//        mVisualObjects[4]->draw();
+
+
+//        glUseProgram(mShaderProgram[1]->getProgram());
+//        glUniformMatrix4fv( vMatrixUniform0, 1, GL_TRUE, mCurrentCamera->mViewMatrix.constData());
+//        glUniformMatrix4fv( pMatrixUniform0, 1, GL_TRUE, mCurrentCamera->mProjectionMatrix.constData());
+//        glUniformMatrix4fv( mMatrixUniform0, 1, GL_TRUE, mVisualObjects[5]->mMatrix.constData());
+//        mVisualObjects[5]->draw();
 
         glUseProgram(mShaderProgram[0]->getProgram());
         gsl::Matrix4x4 modelMat{};

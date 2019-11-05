@@ -12,6 +12,7 @@ public:
     void addCurveToVertices(int subdivisions);
     std::vector<gsl::Vector3D> getSplineVerticeLocations();
     void setNewHeights(std::vector<float> inFloats);
+    gsl::Vector3D getCurrentSplineLocation(float t);
 
     virtual void init() override;
     virtual void draw() override;

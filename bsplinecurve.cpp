@@ -66,6 +66,12 @@ void BSplineCurve::setNewHeights(std::vector<float> inFloats)
     }
 }
 
+gsl::Vector3D BSplineCurve::getCurrentSplineLocation(float t)
+{
+     auto tempFloat = gsl::bSpline(controlPoints, knots, t, 3);
+     return tempFloat;
+}
+
 void BSplineCurve::init()
 {
     initializeOpenGLFunctions();
