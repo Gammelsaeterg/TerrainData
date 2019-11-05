@@ -8,6 +8,9 @@ class Trophy : public VisualObject
 public:
     Trophy();
 
+    void init() override;
+    void draw() override;
+
 public slots:
     void OnOverlapEvent(VisualObject *object);
 };
