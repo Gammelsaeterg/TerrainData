@@ -167,28 +167,28 @@ void RenderWindow::init()
         for (unsigned int x{0}; x < xGridSize - 1; ++x, ++i)
         {
             mTerrainTriangles.push_back({{i, i + xGridSize, i + 1},
-                                        {
-                                            static_cast<int>(mTerrainTriangles.size()) + 1,
-                                            (z != 0) ? static_cast<int>(static_cast<int>(mTerrainTriangles.size()) - (xGridSize - 1) * 2 + 1) : -1,
-                                            (x != 0) ? static_cast<int>(mTerrainTriangles.size()) - 1 : -1
-                                        }
+                                         {
+                                             static_cast<int>(mTerrainTriangles.size()) + 1,
+                                             (z != 0) ? static_cast<int>(static_cast<int>(mTerrainTriangles.size()) - (xGridSize - 1) * 2 + 1) : -1,
+                                             (x != 0) ? static_cast<int>(mTerrainTriangles.size()) - 1 : -1
+                                         }
                                         });
 
-//            std::cout << "Added a triangle with index: " << mTerrainTriangles.back().index[0] << ", " << mTerrainTriangles.back().index[1]
-//                      << ", " << mTerrainTriangles.back().index[2] << " and neighbours: " << mTerrainTriangles.back().neighbour[0]
-//                      << ", " << mTerrainTriangles.back().neighbour[1] << ", " << mTerrainTriangles.back().neighbour[2] << std::endl;
+            //            std::cout << "Added a triangle with index: " << mTerrainTriangles.back().index[0] << ", " << mTerrainTriangles.back().index[1]
+            //                      << ", " << mTerrainTriangles.back().index[2] << " and neighbours: " << mTerrainTriangles.back().neighbour[0]
+            //                      << ", " << mTerrainTriangles.back().neighbour[1] << ", " << mTerrainTriangles.back().neighbour[2] << std::endl;
 
             mTerrainTriangles.push_back({{i + 1, i + xGridSize, i + 1 + xGridSize} ,
-                                        {
-                                            (z < zGridSize - 2) ? static_cast<int>(static_cast<int>(mTerrainTriangles.size()) + (zGridSize - 1) * 2 - 1) : -1,
-                                            (x < xGridSize - 2) ? static_cast<int>(mTerrainTriangles.size() + 1) : -1,
-                                            static_cast<int>(mTerrainTriangles.size()) - 1
-                                        }
+                                         {
+                                             (z < zGridSize - 2) ? static_cast<int>(static_cast<int>(mTerrainTriangles.size()) + (zGridSize - 1) * 2 - 1) : -1,
+                                             (x < xGridSize - 2) ? static_cast<int>(mTerrainTriangles.size() + 1) : -1,
+                                             static_cast<int>(mTerrainTriangles.size()) - 1
+                                         }
                                         });
 
-//            std::cout << "Added a triangle with index: " << mTerrainTriangles.back().index[0] << ", " << mTerrainTriangles.back().index[1]
-//                      << ", " << mTerrainTriangles.back().index[2] << " and neighbours: " << mTerrainTriangles.back().neighbour[0]
-//                      << ", " << mTerrainTriangles.back().neighbour[1] << ", " << mTerrainTriangles.back().neighbour[2] << std::endl;
+            //            std::cout << "Added a triangle with index: " << mTerrainTriangles.back().index[0] << ", " << mTerrainTriangles.back().index[1]
+            //                      << ", " << mTerrainTriangles.back().index[2] << " and neighbours: " << mTerrainTriangles.back().neighbour[0]
+            //                      << ", " << mTerrainTriangles.back().neighbour[1] << ", " << mTerrainTriangles.back().neighbour[2] << std::endl;
         }
 
     }
@@ -264,7 +264,7 @@ void RenderWindow::render()
     //to clear the screen for each redraw
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-
+    //**********This is now one in a loo************
     for (auto object : mVisualObjects)
     {
         glUseProgram(mShaderProgram[0]->getProgram());
@@ -273,42 +273,11 @@ void RenderWindow::render()
         glUniformMatrix4fv( mMatrixUniform0, 1, GL_TRUE, object->mMatrix.constData());
         object->draw();
     }
+    // For the player character to be able to move
+    moveBall(deltaTime);
 
-    //******** This should be done with a loop!
+    // This is for the terrain.
     {
-//        glUseProgram(mShaderProgram[0]->getProgram());
-//        glUniformMatrix4fv( vMatrixUniform0, 1, GL_TRUE, mCurrentCamera->mViewMatrix.constData());
-//        glUniformMatrix4fv( pMatrixUniform0, 1, GL_TRUE, mCurrentCamera->mProjectionMatrix.constData());
-//        glUniformMatrix4fv( mMatrixUniform0, 1, GL_TRUE, mVisualObjects[0]->mMatrix.constData());
-//        mVisualObjects[0]->draw();
-
-//        glUseProgram(mShaderProgram[0]->getProgram());
-        moveBall(deltaTime);
-//        glUniformMatrix4fv( vMatrixUniform0, 1, GL_TRUE, mCurrentCamera->mViewMatrix.constData());
-//        glUniformMatrix4fv( pMatrixUniform0, 1, GL_TRUE, mCurrentCamera->mProjectionMatrix.constData());
-//        glUniformMatrix4fv( mMatrixUniform0, 1, GL_TRUE, mVisualObjects[2]->mMatrix.constData());
-//        mVisualObjects[2]->draw();
-
-//        glUseProgram(mShaderProgram[0]->getProgram());
-//        glUniformMatrix4fv( vMatrixUniform0, 1, GL_TRUE, mCurrentCamera->mViewMatrix.constData());
-//        glUniformMatrix4fv( pMatrixUniform0, 1, GL_TRUE, mCurrentCamera->mProjectionMatrix.constData());
-//        glUniformMatrix4fv( mMatrixUniform0, 1, GL_TRUE, mVisualObjects[3]->mMatrix.constData());
-//        mVisualObjects[3]->draw();
-
-//        //bSplines [4]
-//        glUseProgram(mShaderProgram[1]->getProgram());
-//        glUniformMatrix4fv( vMatrixUniform0, 1, GL_TRUE, mCurrentCamera->mViewMatrix.constData());
-//        glUniformMatrix4fv( pMatrixUniform0, 1, GL_TRUE, mCurrentCamera->mProjectionMatrix.constData());
-//        glUniformMatrix4fv( mMatrixUniform0, 1, GL_TRUE, mVisualObjects[4]->mMatrix.constData());
-//        mVisualObjects[4]->draw();
-
-
-//        glUseProgram(mShaderProgram[1]->getProgram());
-//        glUniformMatrix4fv( vMatrixUniform0, 1, GL_TRUE, mCurrentCamera->mViewMatrix.constData());
-//        glUniformMatrix4fv( pMatrixUniform0, 1, GL_TRUE, mCurrentCamera->mProjectionMatrix.constData());
-//        glUniformMatrix4fv( mMatrixUniform0, 1, GL_TRUE, mVisualObjects[5]->mMatrix.constData());
-//        mVisualObjects[5]->draw();
-
         glUseProgram(mShaderProgram[0]->getProgram());
         gsl::Matrix4x4 modelMat{};
         modelMat.setToIdentity();
@@ -318,13 +287,11 @@ void RenderWindow::render()
         glBindVertexArray(mTerrainVAO);
         // glDrawArrays(GL_POINTS, 0, mTerrainVertices.size());
         glDrawElements(GL_TRIANGLES, mTerrainTriangles.size() * 3, GL_UNSIGNED_INT, 0);
-
     }
-
 
     if (mInput.W && !mInput.RMB)
     {
-       inputMoveBall(ballDirection::UP, deltaTime);
+        inputMoveBall(ballDirection::UP, deltaTime);
     }
     if (mInput.S && !mInput.RMB)
     {
@@ -367,14 +334,14 @@ std::vector<gsl::Vector3D> RenderWindow::mapToGrid(const std::vector<gsl::Vector
             {
                 gsl::Vector3D gridPoint{
                     x * ((max.x - min.x) / xGrid) + min.x,
-                    0,
-                    z * ((max.z - min.z) / zGrid) + min.z
+                            0,
+                            z * ((max.z - min.z) / zGrid) + min.z
                 };
 
                 gsl::Vector3D lastClosestPoint{
                     closestIndex[0] * ((max.x - min.x) / xGrid) + min.x,
-                    0,
-                    closestIndex[1] * ((max.z - min.z) / zGrid) + min.z
+                            0,
+                            closestIndex[1] * ((max.z - min.z) / zGrid) + min.z
                 };
 
                 if ((gsl::Vector3D{point.x, 0, point.z} - gridPoint).length() < (gsl::Vector3D{point.x, 0, point.z} - lastClosestPoint).length())
@@ -431,15 +398,15 @@ float RenderWindow::getTerrainHeight(gsl::Vector3D inLocation)
     {
         gsl::Vector3D pointCoords = gsl::barCoord(
                     gsl::Vector3D(inLocation.getX(), 0.f, inLocation.getZ())
-                  , gsl::Vector3D(mTerrainVertices.at(currentTriangle->index[0]).get_xyz().getX(), 0.f, mTerrainVertices.at(currentTriangle->index[0]).get_xyz().getZ())
-                  , gsl::Vector3D(mTerrainVertices.at(currentTriangle->index[1]).get_xyz().getX(), 0.f, mTerrainVertices.at(currentTriangle->index[1]).get_xyz().getZ())
-                  , gsl::Vector3D(mTerrainVertices.at(currentTriangle->index[2]).get_xyz().getX(), 0.f, mTerrainVertices.at(currentTriangle->index[2]).get_xyz().getZ())
-                    );
+                    , gsl::Vector3D(mTerrainVertices.at(currentTriangle->index[0]).get_xyz().getX(), 0.f, mTerrainVertices.at(currentTriangle->index[0]).get_xyz().getZ())
+                , gsl::Vector3D(mTerrainVertices.at(currentTriangle->index[1]).get_xyz().getX(), 0.f, mTerrainVertices.at(currentTriangle->index[1]).get_xyz().getZ())
+                , gsl::Vector3D(mTerrainVertices.at(currentTriangle->index[2]).get_xyz().getX(), 0.f, mTerrainVertices.at(currentTriangle->index[2]).get_xyz().getZ())
+                );
 
 
         tempHeight = ((pointCoords.getX() * mTerrainVertices.at(currentTriangle->index[0]).get_xyz().getY()) +
-                      (pointCoords.getY() * mTerrainVertices.at(currentTriangle->index[1]).get_xyz().getY()) +
-                      (pointCoords.getZ() * mTerrainVertices.at(currentTriangle->index[2]).get_xyz().getY()));
+                (pointCoords.getY() * mTerrainVertices.at(currentTriangle->index[1]).get_xyz().getY()) +
+                (pointCoords.getZ() * mTerrainVertices.at(currentTriangle->index[2]).get_xyz().getY()));
     }
     else
     {
@@ -493,15 +460,15 @@ void RenderWindow::inputMoveBall(ballDirection direction, float deltaTime)
     if (currentTriangle != nullptr)
     {
         playerCoords = gsl::barCoord(
-                      gsl::Vector3D(mVisualObjects[3]->mMatrix.getPosition().getX(), 0.f, mVisualObjects[3]->mMatrix.getPosition().getZ())
-                    , gsl::Vector3D(mTerrainVertices.at(currentTriangle->index[0]).get_xyz().getX(), 0.f, mTerrainVertices.at(currentTriangle->index[0]).get_xyz().getZ())
-                    , gsl::Vector3D(mTerrainVertices.at(currentTriangle->index[1]).get_xyz().getX(), 0.f, mTerrainVertices.at(currentTriangle->index[1]).get_xyz().getZ())
-                    , gsl::Vector3D(mTerrainVertices.at(currentTriangle->index[2]).get_xyz().getX(), 0.f, mTerrainVertices.at(currentTriangle->index[2]).get_xyz().getZ())
-                      );
+                    gsl::Vector3D(mVisualObjects[3]->mMatrix.getPosition().getX(), 0.f, mVisualObjects[3]->mMatrix.getPosition().getZ())
+                , gsl::Vector3D(mTerrainVertices.at(currentTriangle->index[0]).get_xyz().getX(), 0.f, mTerrainVertices.at(currentTriangle->index[0]).get_xyz().getZ())
+                , gsl::Vector3D(mTerrainVertices.at(currentTriangle->index[1]).get_xyz().getX(), 0.f, mTerrainVertices.at(currentTriangle->index[1]).get_xyz().getZ())
+                , gsl::Vector3D(mTerrainVertices.at(currentTriangle->index[2]).get_xyz().getX(), 0.f, mTerrainVertices.at(currentTriangle->index[2]).get_xyz().getZ())
+                );
 
         playerHeight = ((playerCoords.getX() * mTerrainVertices.at(currentTriangle->index[0]).get_xyz().getY()) +
-                        (playerCoords.getY() * mTerrainVertices.at(currentTriangle->index[1]).get_xyz().getY()) +
-                        (playerCoords.getZ() * mTerrainVertices.at(currentTriangle->index[2]).get_xyz().getY()));
+                (playerCoords.getY() * mTerrainVertices.at(currentTriangle->index[1]).get_xyz().getY()) +
+                (playerCoords.getZ() * mTerrainVertices.at(currentTriangle->index[2]).get_xyz().getY()));
 
         //qDebug() << playerCoords;
     }
@@ -732,7 +699,7 @@ void RenderWindow::handleInput()
         mVisualObjects[2]->mMatrix.setToIdentity();
         mVisualObjects[2]->mMatrix.setPosition(0.f, 10.f, 0.f);
     }
-        mSimulationTime -= deltaTime;
+    mSimulationTime -= deltaTime;
 }
 
 void RenderWindow::keyPressEvent(QKeyEvent *event)
