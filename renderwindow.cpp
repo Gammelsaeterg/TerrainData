@@ -395,7 +395,7 @@ void RenderWindow::setupTextureShader(int shaderIndex)
 
 float RenderWindow::getTerrainHeight(gsl::Vector3D inLocation)
 {
-    float tempHeight;
+    float tempHeight{0};
     Triangle* currentTriangle = getBallToPlaneTriangle(gsl::Vector3D(inLocation.getX(), 0.f, inLocation.getZ()));
     if (currentTriangle != nullptr)
     {
@@ -410,6 +410,10 @@ float RenderWindow::getTerrainHeight(gsl::Vector3D inLocation)
         tempHeight = ((pointCoords.getX() * mTerrainVertices.at(currentTriangle->index[0]).get_xyz().getY()) +
                       (pointCoords.getY() * mTerrainVertices.at(currentTriangle->index[1]).get_xyz().getY()) +
                       (pointCoords.getZ() * mTerrainVertices.at(currentTriangle->index[2]).get_xyz().getY()));
+    }
+    else
+    {
+        qDebug() << "oof";
     }
     return tempHeight;
 }
