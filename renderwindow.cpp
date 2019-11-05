@@ -82,9 +82,9 @@ void RenderWindow::init()
     //NB: hardcoded path to files! You have to change this if you change directories for the project.
     //Qt makes a build-folder besides the project folder. That is why we go down one directory
     // (out of the build-folder) and then up into the project folder.
-    mShaderProgram[0] = new Shader("../Oblig3/plainvertex.vert", "../Oblig3/plainfragment.frag");
+    mShaderProgram[0] = new Shader("../TerrainData/plainvertex.vert", "../TerrainData/plainfragment.frag");
     qDebug() << "Plain shader program id: " << mShaderProgram[0]->getProgram();
-    mShaderProgram[1]= new Shader("../Oblig3/texturevertex.vert", "../Oblig3/texturefragmet.frag");
+    mShaderProgram[1]= new Shader("../TerrainData/texturevertex.vert", "../TerrainData/texturefragmet.frag");
     qDebug() << "Texture shader program id: " << mShaderProgram[1]->getProgram();
 
     setupPlainShader(0);
@@ -92,7 +92,7 @@ void RenderWindow::init()
 
     //**********************  Texture stuff: **********************
     mTexture[0] = new Texture();
-    mTexture[1] = new Texture("../Oblig3/Assets/hund.bmp");
+    mTexture[1] = new Texture("../TerrainData/Assets/hund.bmp");
 
     //Set the textures loaded to a texture unit
     glActiveTexture(GL_TEXTURE0);
@@ -126,11 +126,7 @@ void RenderWindow::init()
     temp->mAcceleration = gsl::vec3{0.f, -9.81f, 0.f};
     mVisualObjects.push_back(temp);
 
-    //Curve test
-    temp = new BSplineCurve();
-    temp->init();
-    temp->mMatrix.scale(5);
-    mVisualObjects.push_back(temp);
+
 
     //********************** Set up camera **********************
     mCurrentCamera = new Camera();
@@ -139,12 +135,11 @@ void RenderWindow::init()
     //********************** Terrain Data **************************
     gsl::LASLoader loader{"../Oblig3/Mountain.las"};
 
+    //Terrain stuff
     bool flipY = true;
-
     gsl::Vector3D min{};
     gsl::Vector3D max{};
     std::vector<gsl::Vector3D> terrainPoints;
-
     terrainPoints.reserve(loader.pointCount());
     for (auto it = loader.begin(); it != loader.end(); it = it + 100)
     {
@@ -158,20 +153,13 @@ void RenderWindow::init()
         max.y = (terrainPoints.back().y > max.y) ? terrainPoints.back().y : max.y;
         max.z = (terrainPoints.back().z > max.z) ? terrainPoints.back().z : max.z;
     }
-
     int xGridSize{50}, zGridSize{50};
     terrainPoints = mapToGrid(terrainPoints, xGridSize, zGridSize, min, max);
     terrainPoints.shrink_to_fit();
-
-
-
     mTerrainVertices.reserve(terrainPoints.size());
     std::transform(terrainPoints.begin(), terrainPoints.end(), std::back_inserter(mTerrainVertices), [](const gsl::Vector3D& point){
         return Vertex{(point - 0.5f) * 40.f, {point.getZ(), point.getY(), 0.0f}, {0, 0}};
     });
-
-    //std::cout << "Point count: " << mTerrainVertices.size() << std::endl;
-
     // Create indices
     mTerrainTriangles.reserve((xGridSize - 1) * (zGridSize - 1) * 2);
     for (unsigned int z{0}, i{0}; z < zGridSize - 1; ++z, ++i)
@@ -205,17 +193,12 @@ void RenderWindow::init()
     }
 
     //std::cout << "Triangle count: " << mTerrainTriangles.size() << std::endl;
-
-
     glGenVertexArrays(1, &mTerrainVAO);
     glBindVertexArray(mTerrainVAO);
-
     GLuint terrainVBO, terrainEBO;
     glGenBuffers(1, &terrainVBO);
     glBindBuffer(GL_ARRAY_BUFFER, terrainVBO);
     glBufferData(GL_ARRAY_BUFFER, mTerrainVertices.size() * sizeof(Vertex), mTerrainVertices.data(), GL_STATIC_DRAW);
-
-
     unsigned int *data = new unsigned int[mTerrainTriangles.size() * 3];
     for (unsigned int i{0}; i < mTerrainTriangles.size(); ++i)
         for (unsigned int j{0}; j < 3; ++j)
@@ -224,9 +207,7 @@ void RenderWindow::init()
     glGenBuffers(1, &terrainEBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, terrainEBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, mTerrainTriangles.size() * 3 * sizeof(unsigned int), data, GL_STATIC_DRAW);
-
     delete[] data;
-
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)0);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)(3 * sizeof(GLfloat)));
@@ -237,6 +218,20 @@ void RenderWindow::init()
     glBindVertexArray(0);
 
     // glPointSize(10.f);
+
+
+    //Curve test
+    temp = new BSplineCurve();
+    std::vector<gsl::Vector3D> tempLocs = static_cast<BSplineCurve*>(temp)->getSplineVerticeLocations();
+    std::vector<float> tempHeights;
+    for (auto locs : tempLocs)
+    {
+        float tempLoc = getTerrainHeight(gsl::Vector3D(locs.getX(), 0.f, locs.getZ()));
+        tempHeights.push_back(tempLoc);
+    }
+    static_cast<BSplineCurve*>(temp)->setNewHeights(tempHeights);
+    temp->init();
+    mVisualObjects.push_back(temp);
 }
 
 ///Called each frame - doing the rendering
@@ -396,6 +391,27 @@ void RenderWindow::setupTextureShader(int shaderIndex)
     vMatrixUniform1 = glGetUniformLocation( mShaderProgram[shaderIndex]->getProgram(), "vMatrix" );
     pMatrixUniform1 = glGetUniformLocation( mShaderProgram[shaderIndex]->getProgram(), "pMatrix" );
     mTextureUniform = glGetUniformLocation(mShaderProgram[shaderIndex]->getProgram(), "textureSampler");
+}
+
+float RenderWindow::getTerrainHeight(gsl::Vector3D inLocation)
+{
+    float tempHeight;
+    Triangle* currentTriangle = getBallToPlaneTriangle(gsl::Vector3D(inLocation.getX(), 0.f, inLocation.getZ()));
+    if (currentTriangle != nullptr)
+    {
+        gsl::Vector3D pointCoords = gsl::barCoord(
+                    gsl::Vector3D(inLocation.getX(), 0.f, inLocation.getZ())
+                  , gsl::Vector3D(mTerrainVertices.at(currentTriangle->index[0]).get_xyz().getX(), 0.f, mTerrainVertices.at(currentTriangle->index[0]).get_xyz().getZ())
+                  , gsl::Vector3D(mTerrainVertices.at(currentTriangle->index[1]).get_xyz().getX(), 0.f, mTerrainVertices.at(currentTriangle->index[1]).get_xyz().getZ())
+                  , gsl::Vector3D(mTerrainVertices.at(currentTriangle->index[2]).get_xyz().getX(), 0.f, mTerrainVertices.at(currentTriangle->index[2]).get_xyz().getZ())
+                    );
+
+
+        tempHeight = ((pointCoords.getX() * mTerrainVertices.at(currentTriangle->index[0]).get_xyz().getY()) +
+                      (pointCoords.getY() * mTerrainVertices.at(currentTriangle->index[1]).get_xyz().getY()) +
+                      (pointCoords.getZ() * mTerrainVertices.at(currentTriangle->index[2]).get_xyz().getY()));
+    }
+    return tempHeight;
 }
 
 void RenderWindow::moveBall(float deltaTime)

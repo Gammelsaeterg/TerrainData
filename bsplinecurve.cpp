@@ -9,10 +9,12 @@ BSplineCurve::BSplineCurve()
 
 void BSplineCurve::createDefaultSplineCurve()
 {
-    controlPoints.push_back(gsl::Vector3D(-4, 0, -4));
-    controlPoints.push_back(gsl::Vector3D(-2, 0,  4));
-    controlPoints.push_back(gsl::Vector3D( 2, 0, -4));
-    controlPoints.push_back(gsl::Vector3D( 4, 0,  4));
+    int scaleNum = 5;
+
+    controlPoints.push_back(gsl::Vector3D(-4 * scaleNum, 0, -4 * scaleNum));
+    controlPoints.push_back(gsl::Vector3D(-2 * scaleNum, 0,  4 * scaleNum));
+    controlPoints.push_back(gsl::Vector3D( 2 * scaleNum, 0, -4 * scaleNum));
+    controlPoints.push_back(gsl::Vector3D( 4 * scaleNum, 0,  4 * scaleNum));
 
     knots.push_back(0);
     knots.push_back(0);
@@ -39,7 +41,28 @@ void BSplineCurve::addCurveToVertices(int subdivisions)
         tempVertex.set_xyz(temp);
         mVertices.push_back(tempVertex);
 
-        qDebug() << tempVertex.get_xyz();
+        //qDebug() << tempVertex.get_xyz();
+    }
+
+}
+
+std::vector<gsl::Vector3D> BSplineCurve::getSplineVerticeLocations()
+{
+    std::vector<gsl::Vector3D> temp;
+
+    for (auto vertex : mVertices)
+    {
+        temp.push_back(vertex.get_xyz());
+    }
+    return temp;
+}
+
+void BSplineCurve::setNewHeights(std::vector<float> inFloats)
+{
+
+    for (int i = 0; i < mVertices.size(); ++i)
+    {
+        mVertices[i].set_xyz(mVertices[i].get_xyz().getX(), inFloats[i], mVertices[i].get_xyz().getZ());
     }
 }
 
