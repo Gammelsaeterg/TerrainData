@@ -12,16 +12,23 @@ void BSplineCurve::createDefaultSplineCurve()
     int scaleNum = 5;
 
     controlPoints.push_back(gsl::Vector3D(-4 * scaleNum, 0, -4 * scaleNum));
-    controlPoints.push_back(gsl::Vector3D(-2 * scaleNum, 0,  4 * scaleNum));
-    controlPoints.push_back(gsl::Vector3D( 2 * scaleNum, 0, -4 * scaleNum));
-    controlPoints.push_back(gsl::Vector3D( 4 * scaleNum, 0,  4 * scaleNum));
+    controlPoints.push_back(gsl::Vector3D(-3 * scaleNum, 0, -3 * scaleNum));
 
-    //temporariliy hard coded
-    createClampedKnots(2, 4);
+    //trophy coordinates
+    controlPoints.push_back(gsl::Vector3D(18, 0, -19));
+    controlPoints.push_back(gsl::Vector3D(18, 0, 18));
+    controlPoints.push_back(gsl::Vector3D(-19, 0, -19));
+//    18, 19.7f, -19
+
+//    18, 8.12f, 18
+
+//    -19, 3.9f, -19
+
+    controlPoints.push_back(gsl::Vector3D( -3 * scaleNum, 0,  3 * scaleNum));
+    controlPoints.push_back(gsl::Vector3D( -4 * scaleNum, 0,  4 * scaleNum));
 
 
-
-
+    createClampedKnots(2, controlPoints.size());
 }
 
 void BSplineCurve::addCurveToVertices(int subdivisions)
@@ -91,10 +98,10 @@ void BSplineCurve::createClampedKnots(int degree, int numberOfControlPoints)
         knots.push_back(1);
     }
 
-    for (auto knot : knots)
-    {
-        qDebug() << knot;
-    }
+//    for (auto knot : knots)
+//    {
+//        qDebug() << knot;
+//    }
 }
 
 void BSplineCurve::init()

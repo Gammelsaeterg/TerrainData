@@ -114,7 +114,7 @@ void RenderWindow::init()
     //Moving gravity ball
     temp = new OctahedronBall{3};
     temp->init();
-    temp->mMatrix.setPosition(-10, 3.f, 10);
+    temp->mMatrix.setPosition(-10, 300.f, 10);
     temp->startPos = temp->mMatrix.getPosition();
     temp->mAcceleration = gsl::vec3{0.f, -9.81f, 0.f};
     mVisualObjects.push_back(temp);
@@ -136,6 +136,7 @@ void RenderWindow::init()
     gsl::LASLoader loader{"../TerrainData/Mountain.las"};
 
     //Terrain stuff
+    mTerrainModMat.setToIdentity(); mTerrainModMat.scale(1.f, terrainHeightScale, 1.f);
     bool flipY = true;
     gsl::Vector3D min{};
     gsl::Vector3D max{};
@@ -174,9 +175,6 @@ void RenderWindow::init()
                                          }
                                         });
 
-            //            std::cout << "Added a triangle with index: " << mTerrainTriangles.back().index[0] << ", " << mTerrainTriangles.back().index[1]
-            //                      << ", " << mTerrainTriangles.back().index[2] << " and neighbours: " << mTerrainTriangles.back().neighbour[0]
-            //                      << ", " << mTerrainTriangles.back().neighbour[1] << ", " << mTerrainTriangles.back().neighbour[2] << std::endl;
 
             mTerrainTriangles.push_back({{i + 1, i + xGridSize, i + 1 + xGridSize} ,
                                          {
@@ -186,14 +184,12 @@ void RenderWindow::init()
                                          }
                                         });
 
-            //            std::cout << "Added a triangle with index: " << mTerrainTriangles.back().index[0] << ", " << mTerrainTriangles.back().index[1]
-            //                      << ", " << mTerrainTriangles.back().index[2] << " and neighbours: " << mTerrainTriangles.back().neighbour[0]
-            //                      << ", " << mTerrainTriangles.back().neighbour[1] << ", " << mTerrainTriangles.back().neighbour[2] << std::endl;
         }
 
     }
 
     //std::cout << "Triangle count: " << mTerrainTriangles.size() << std::endl;
+    //init()
     glGenVertexArrays(1, &mTerrainVAO);
     glBindVertexArray(mTerrainVAO);
     GLuint terrainVBO, terrainEBO;
@@ -222,14 +218,15 @@ void RenderWindow::init()
 
     //Curve test
     temp = new BSplineCurve();
-//    std::vector<gsl::Vector3D> tempLocs = static_cast<BSplineCurve*>(temp)->getSplineVerticeLocations();
-//    std::vector<float> tempHeights;
-//    for (auto locs : tempLocs)
-//    {
-//        float tempLoc = getTerrainHeight(gsl::Vector3D(locs.getX(), 0.f, locs.getZ()));
-//        tempHeights.push_back(tempLoc);
-//    }
-//    static_cast<BSplineCurve*>(temp)->setNewHeights(tempHeights);
+    std::vector<gsl::Vector3D> tempLocs = static_cast<BSplineCurve*>(temp)->getSplineVerticeLocations();
+    std::vector<float> tempHeights;
+    float tempLoc;
+    for (auto locs : tempLocs)
+    {
+        tempLoc = getTerrainHeight(gsl::Vector3D(locs.getX(), 0.f, locs.getZ()));
+        tempHeights.push_back(tempLoc + 0.5f);
+    }
+    static_cast<BSplineCurve*>(temp)->setNewHeights(tempHeights);
     temp->init();
     mVisualObjects.push_back(temp);
 
@@ -275,19 +272,19 @@ void RenderWindow::render()
     }
     //Spline [4], NPC ball [5] TEMP
     // For the player character to be able to move
-    moveBall(deltaTime);
+    //moveBall(deltaTime);
 
     //Move NPC
-    moveBallAlongSpline(static_cast<BSplineCurve*>(mVisualObjects[4]), mVisualObjects[6]);
+    moveBallAlongSpline(static_cast<BSplineCurve*>(mVisualObjects[4]), mVisualObjects[5]);
 
     // This is for the terrain.
     {
         glUseProgram(mShaderProgram[0]->getProgram());
-        gsl::Matrix4x4 modelMat{};
-        modelMat.setToIdentity();
+//        gsl::Matrix4x4 modelMat{};
+//        modelMat.setToIdentity();
         glUniformMatrix4fv(mShaderProgram[0]->vMatrixUniform, 1, GL_TRUE, mCurrentCamera->mViewMatrix.constData());
         glUniformMatrix4fv( mShaderProgram[0]->pMatrixUniform, 1, GL_TRUE, mCurrentCamera->mProjectionMatrix.constData());
-        glUniformMatrix4fv( mShaderProgram[0]->mMatrixUniform, 1, GL_TRUE, modelMat.constData());
+        glUniformMatrix4fv( mShaderProgram[0]->mMatrixUniform, 1, GL_TRUE, mTerrainModMat.constData());
         glBindVertexArray(mTerrainVAO);
         // glDrawArrays(GL_POINTS, 0, mTerrainVertices.size());
         glDrawElements(GL_TRIANGLES, mTerrainTriangles.size() * 3, GL_UNSIGNED_INT, 0);
@@ -396,27 +393,28 @@ void RenderWindow::setupTextureShader(int shaderIndex)
 
 float RenderWindow::getTerrainHeight(gsl::Vector3D inLocation)
 {
-    float tempHeight{0};
     Triangle* currentTriangle = getBallToPlaneTriangle(gsl::Vector3D(inLocation.getX(), 0.f, inLocation.getZ()));
     if (currentTriangle != nullptr)
     {
         gsl::Vector3D pointCoords = gsl::barCoord(
-                    gsl::Vector3D(inLocation.getX(), 0.f, inLocation.getZ())
-                    , gsl::Vector3D(mTerrainVertices.at(currentTriangle->index[0]).get_xyz().getX(), 0.f, mTerrainVertices.at(currentTriangle->index[0]).get_xyz().getZ())
+                  gsl::Vector3D(inLocation.getX(), 0.f, inLocation.getZ())
+                , gsl::Vector3D(mTerrainVertices.at(currentTriangle->index[0]).get_xyz().getX(), 0.f, mTerrainVertices.at(currentTriangle->index[0]).get_xyz().getZ())
                 , gsl::Vector3D(mTerrainVertices.at(currentTriangle->index[1]).get_xyz().getX(), 0.f, mTerrainVertices.at(currentTriangle->index[1]).get_xyz().getZ())
                 , gsl::Vector3D(mTerrainVertices.at(currentTriangle->index[2]).get_xyz().getX(), 0.f, mTerrainVertices.at(currentTriangle->index[2]).get_xyz().getZ())
                 );
 
 
-        tempHeight = ((pointCoords.getX() * mTerrainVertices.at(currentTriangle->index[0]).get_xyz().getY()) +
-                (pointCoords.getY() * mTerrainVertices.at(currentTriangle->index[1]).get_xyz().getY()) +
-                (pointCoords.getZ() * mTerrainVertices.at(currentTriangle->index[2]).get_xyz().getY()));
+        tempTerrainHeight = 1.f + ((pointCoords.getX() * mTerrainVertices.at(currentTriangle->index[0]).get_xyz().getY()) +
+                            (pointCoords.getY() * mTerrainVertices.at(currentTriangle->index[1]).get_xyz().getY()) +
+                            (pointCoords.getZ() * mTerrainVertices.at(currentTriangle->index[2]).get_xyz().getY()));
+
+        tempTerrainHeight = tempTerrainHeight * terrainHeightScale;
     }
     else
     {
         //qDebug() << "oof";
     }
-    return tempHeight;
+    return tempTerrainHeight;
 }
 
 void RenderWindow::moveBallAlongSpline(BSplineCurve *curve, VisualObject *objectToMove)
@@ -458,6 +456,8 @@ void RenderWindow::moveBallAlongSpline(BSplineCurve *curve, VisualObject *object
         heightAtSpline = ((pointCoords.getX() * mTerrainVertices.at(currentTriangle->index[0]).get_xyz().getY()) +
                 (pointCoords.getY() * mTerrainVertices.at(currentTriangle->index[1]).get_xyz().getY()) +
                 (pointCoords.getZ() * mTerrainVertices.at(currentTriangle->index[2]).get_xyz().getY()));
+
+        heightAtSpline = (heightAtSpline * terrainHeightScale) + 1.f;
     }
     else
     {
@@ -526,6 +526,7 @@ void RenderWindow::inputMoveBall(ballDirection direction, float deltaTime)
                 (playerCoords.getY() * mTerrainVertices.at(currentTriangle->index[1]).get_xyz().getY()) +
                 (playerCoords.getZ() * mTerrainVertices.at(currentTriangle->index[2]).get_xyz().getY()));
 
+        playerHeight = playerHeight * terrainHeightScale;
         //qDebug() << playerCoords;
     }
 
@@ -750,10 +751,10 @@ void RenderWindow::handleInput()
 
     if (mInput.LMB)
     {
-        mVisualObjects[2]->mAcceleration = gsl::vec3{0.f, -9.81f, 0.f};
-        mVisualObjects[2]->velocity = gsl::vec3{0, 0, 0};
-        mVisualObjects[2]->mMatrix.setToIdentity();
-        mVisualObjects[2]->mMatrix.setPosition(0.f, 10.f, 0.f);
+//        mVisualObjects[2]->mAcceleration = gsl::vec3{0.f, -9.81f, 0.f};
+//        mVisualObjects[2]->velocity = gsl::vec3{0, 0, 0};
+//        mVisualObjects[2]->mMatrix.setToIdentity();
+//        mVisualObjects[2]->mMatrix.setPosition(0.f, 10.f, 0.f);
     }
     mSimulationTime -= deltaTime;
 }

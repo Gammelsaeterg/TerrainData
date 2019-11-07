@@ -75,10 +75,13 @@ private:
 
     std::vector<VisualObject*> mVisualObjects;
     std::vector<Vertex> mTerrainVertices;
+    gsl::Matrix4x4 mTerrainModMat{};
 
     std::vector<Triangle> mTerrainTriangles;
     GLuint mTerrainVAO;
     float getTerrainHeight(gsl::Vector3D inLocation);
+    float terrainHeightScale{0.5f};
+    float tempTerrainHeight{0.f};
 
     float timeCounter{0};
     void moveBallAlongSpline(BSplineCurve* curve, VisualObject* objectToMove);
