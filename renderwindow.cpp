@@ -240,10 +240,10 @@ void RenderWindow::init()
     temp->mAcceleration = gsl::vec3{0.f, -9.81f, 0.f};
     mVisualObjects.push_back(temp);
 
-    // Testing Trophy
-    temp = new Trophy();
-    temp->init();
-    mVisualObjects.push_back(temp);
+//    // Testing Trophy
+//    temp = new Trophy();
+//    temp->init();
+//    mVisualObjects.push_back(temp);
 }
 
 ///Called each frame - doing the rendering

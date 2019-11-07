@@ -196,7 +196,8 @@ void Trophy::init() {
    glBindVertexArray(0);
 }
 
-void Trophy::draw() {
+void Trophy::draw()
+{
    glBindVertexArray( mVAO );
    glDrawArrays(GL_TRIANGLES, 0, mVertices.size());//mVertices.size());
 }

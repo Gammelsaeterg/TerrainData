@@ -4,8 +4,23 @@
 
 BSplineCurve::BSplineCurve()
 {
+    trophyPoints.push_back(gsl::Vector3D(18, 19.7f, -19));
+    trophyPoints.push_back(gsl::Vector3D(18, 8.12f, 18));
+    trophyPoints.push_back(gsl::Vector3D(-19, 3.9f, -19));
+
     createDefaultSplineCurve();
     addCurveToVertices(50);
+}
+
+BSplineCurve::~BSplineCurve()
+{
+    glDeleteVertexArrays( 1, &mVAO );
+    glDeleteBuffers( 1, &mVBO );
+
+    for (auto trophy : trophies)
+    {
+        delete trophy;
+    }
 }
 
 void BSplineCurve::createDefaultSplineCurve()
@@ -15,15 +30,11 @@ void BSplineCurve::createDefaultSplineCurve()
     controlPoints.push_back(gsl::Vector3D(-4 * scaleNum, 0, -4 * scaleNum));
     controlPoints.push_back(gsl::Vector3D(-3 * scaleNum, 0, -3 * scaleNum));
 
-    //trophy coordinates
-    controlPoints.push_back(gsl::Vector3D(18, 0, -19));
-    controlPoints.push_back(gsl::Vector3D(18, 0, 18));
+    //trophy coordinates //replace with a new trophy function
+    createTrophies();
+    controlPoints.push_back(gsl::Vector3D(18,  0, -19));
+    controlPoints.push_back(gsl::Vector3D(18,  0,  18));
     controlPoints.push_back(gsl::Vector3D(-19, 0, -19));
-//    18, 19.7f, -19
-
-//    18, 8.12f, 18
-
-//    -19, 3.9f, -19
 
     controlPoints.push_back(gsl::Vector3D( -3 * scaleNum, 0,  3 * scaleNum));
     controlPoints.push_back(gsl::Vector3D( -4 * scaleNum, 0,  4 * scaleNum));
@@ -74,6 +85,22 @@ gsl::Vector3D BSplineCurve::getCurrentSplineLocation(float t)
 {
      auto tempFloat = gsl::bSpline(controlPoints, knots, t, degree);
      return tempFloat;
+}
+
+void BSplineCurve::createTrophies()
+{
+    Trophy *tempTrophy = new Trophy();
+
+    trophies.push_back(tempTrophy);
+    trophies.push_back(tempTrophy);
+    trophies.push_back(tempTrophy);
+
+    for (int i = 0; i < trophies.size(); ++i)
+    {
+        trophies[i]->init();
+        trophies[i]->mMatrix.setPosition(trophyPoints[i].getX(), trophyPoints[i].getY(), trophyPoints[i].getZ());
+        //trophy->mMatrix.setToIdentity();
+    }
 }
 
 void BSplineCurve::createClampedKnots(int degree, int numberOfControlPoints)
@@ -144,4 +171,9 @@ void BSplineCurve::draw()
 {
     glBindVertexArray( mVAO );
     glDrawArrays(GL_LINE_STRIP, 0, mVertices.size());
+
+    for (auto trophy : trophies)
+    {
+        trophy->draw();
+    }
 }
