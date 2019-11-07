@@ -83,6 +83,7 @@ private:
     float timeCounter{0};
     void moveBallAlongSpline(BSplineCurve* curve, VisualObject* objectToMove);
     float heightAtSpline{0};
+    bool goingForward{true};
 
     //For player movement
     gsl::Vector3D playerCoords;

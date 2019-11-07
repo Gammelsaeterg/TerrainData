@@ -16,16 +16,12 @@ void BSplineCurve::createDefaultSplineCurve()
     controlPoints.push_back(gsl::Vector3D( 2 * scaleNum, 0, -4 * scaleNum));
     controlPoints.push_back(gsl::Vector3D( 4 * scaleNum, 0,  4 * scaleNum));
 
-    knots.push_back(0);
-    knots.push_back(0);
-    knots.push_back(0);
-    knots.push_back(0);
-    knots.push_back(1);
-    knots.push_back(1);
-    knots.push_back(1);
-    knots.push_back(1);
-
     //temporariliy hard coded
+    createClampedKnots(2, 4);
+
+
+
+
 }
 
 void BSplineCurve::addCurveToVertices(int subdivisions)
@@ -37,7 +33,7 @@ void BSplineCurve::addCurveToVertices(int subdivisions)
 
     for (int i = 0; i < subdivisions; ++i)
     {
-        temp = gsl::bSpline(controlPoints, knots, i/static_cast<float>(subdivisions), 3);
+        temp = gsl::bSpline(controlPoints, knots, i/static_cast<float>(subdivisions), degree);
         tempVertex.set_xyz(temp);
         mVertices.push_back(tempVertex);
 
@@ -68,8 +64,37 @@ void BSplineCurve::setNewHeights(std::vector<float> inFloats)
 
 gsl::Vector3D BSplineCurve::getCurrentSplineLocation(float t)
 {
-     auto tempFloat = gsl::bSpline(controlPoints, knots, t, 3);
+     auto tempFloat = gsl::bSpline(controlPoints, knots, t, degree);
      return tempFloat;
+}
+
+void BSplineCurve::createClampedKnots(int degree, int numberOfControlPoints)
+{
+    knots.clear();
+
+    for (int i = 0; i < degree + 1; ++i)
+    {
+        knots.push_back(0);
+    }
+
+    if (numberOfControlPoints > 2)
+    {
+        for (int i = 0; i < numberOfControlPoints - 3; ++i)
+        {
+            float tempPiece = 1.f / (numberOfControlPoints - 2);
+            knots.push_back(tempPiece * ((i+1)));
+        }
+    }
+
+    for (int i = 0; i < degree + 1; ++i)
+    {
+        knots.push_back(1);
+    }
+
+    for (auto knot : knots)
+    {
+        qDebug() << knot;
+    }
 }
 
 void BSplineCurve::init()

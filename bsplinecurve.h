@@ -14,13 +14,15 @@ public:
     void setNewHeights(std::vector<float> inFloats);
     gsl::Vector3D getCurrentSplineLocation(float t);
 
+    void createClampedKnots(int degree, int numberOfControlPoints);
+
     virtual void init() override;
     virtual void draw() override;
 
 private:
     std::vector<gsl::Vector3D> controlPoints;      // control points
     std::vector<GLfloat> knots;                    // knots
-    int d;                                         //d = degree
+    unsigned long long degree{2};                                         //d = degree
 
 };
 

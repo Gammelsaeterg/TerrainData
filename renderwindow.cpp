@@ -422,13 +422,26 @@ float RenderWindow::getTerrainHeight(gsl::Vector3D inLocation)
 void RenderWindow::moveBallAlongSpline(BSplineCurve *curve, VisualObject *objectToMove)
 {
     float deltaTime = mTimeStart.nsecsElapsed() / 10000000.f;
-    deltaTime = deltaTime / 3.f;
+    deltaTime = deltaTime / 10.f;
+
+    if (goingForward)
+    {
+        timeCounter += deltaTime;
+    }
+    else if (!goingForward)
+    {
+        timeCounter -= deltaTime;
+    }
 
     if (timeCounter > 1.f)
     {
-        timeCounter = 0;
+        goingForward = false;
     }
-    timeCounter += deltaTime;
+    else if (timeCounter < 0.f)
+    {
+        goingForward = true;
+    }
+
 
 
     Triangle* currentTriangle = getBallToPlaneTriangle(gsl::Vector3D(curve->getCurrentSplineLocation(timeCounter).getX(), 0.f, curve->getCurrentSplineLocation(timeCounter).getZ()));
