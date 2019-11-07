@@ -3,6 +3,7 @@
 #include "visualobject.h"
 #include "vector3d.h"
 
+class Trophy;
 class BSplineCurve : public VisualObject
 {
 public:
@@ -15,14 +16,17 @@ public:
     gsl::Vector3D getCurrentSplineLocation(float t);
 
     void createClampedKnots(int degree, int numberOfControlPoints);
+    void eventEndOfSpline();
 
     virtual void init() override;
     virtual void draw() override;
 
+    std::vector<Trophy> tropies[3];
+
 private:
     std::vector<gsl::Vector3D> controlPoints;      // control points
     std::vector<GLfloat> knots;                    // knots
-    unsigned long long degree{2};                                         //d = degree
+    unsigned long long degree{3};                                         //d = degree
 
 };
 

@@ -219,6 +219,7 @@ void RenderWindow::init()
     //Curve test
     temp = new BSplineCurve();
     std::vector<gsl::Vector3D> tempLocs = static_cast<BSplineCurve*>(temp)->getSplineVerticeLocations();
+    ////Visualize curve height------------------
     std::vector<float> tempHeights;
     float tempLoc;
     for (auto locs : tempLocs)
@@ -227,6 +228,7 @@ void RenderWindow::init()
         tempHeights.push_back(tempLoc + 0.5f);
     }
     static_cast<BSplineCurve*>(temp)->setNewHeights(tempHeights);
+    ////Visualize end------------------
     temp->init();
     mVisualObjects.push_back(temp);
 
@@ -434,10 +436,12 @@ void RenderWindow::moveBallAlongSpline(BSplineCurve *curve, VisualObject *object
     if (timeCounter > 1.f)
     {
         goingForward = false;
+        curve->eventEndOfSpline();
     }
     else if (timeCounter < 0.f)
     {
         goingForward = true;
+        curve->eventEndOfSpline();
     }
 
 

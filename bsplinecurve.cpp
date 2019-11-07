@@ -1,4 +1,5 @@
 #include "bsplinecurve.h"
+#include "trophy.h"
 #include "gsl_math.h"
 
 BSplineCurve::BSplineCurve()
@@ -28,7 +29,7 @@ void BSplineCurve::createDefaultSplineCurve()
     controlPoints.push_back(gsl::Vector3D( -4 * scaleNum, 0,  4 * scaleNum));
 
 
-    createClampedKnots(2, controlPoints.size());
+    createClampedKnots(degree, controlPoints.size());
 }
 
 void BSplineCurve::addCurveToVertices(int subdivisions)
@@ -84,11 +85,11 @@ void BSplineCurve::createClampedKnots(int degree, int numberOfControlPoints)
         knots.push_back(0);
     }
 
-    if (numberOfControlPoints > 2)
+    if (numberOfControlPoints > degree)
     {
-        for (int i = 0; i < numberOfControlPoints - 3; ++i)
+        for (int i = 0; i < numberOfControlPoints - (degree + 1); ++i)
         {
-            float tempPiece = 1.f / (numberOfControlPoints - 2);
+            float tempPiece = 1.f / (numberOfControlPoints - degree);
             knots.push_back(tempPiece * ((i+1)));
         }
     }
@@ -102,6 +103,11 @@ void BSplineCurve::createClampedKnots(int degree, int numberOfControlPoints)
 //    {
 //        qDebug() << knot;
 //    }
+}
+
+void BSplineCurve::eventEndOfSpline()
+{
+    //qDebug() << "End of spline hit";
 }
 
 void BSplineCurve::init()
