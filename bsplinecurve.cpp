@@ -13,8 +13,9 @@ BSplineCurve::BSplineCurve()
     createTrophies();
 }
 
-BSplineCurve::BSplineCurve(GLint mMatrixUniform)
+BSplineCurve::BSplineCurve(GLint mMatrixUniform, RenderWindow *inRenderWindow)
 {
+    currentRenderWindow = inRenderWindow;
     trophyPoints.push_back(gsl::Vector3D(18, 19.7f, -19));
     trophyPoints.push_back(gsl::Vector3D(18, 8.12f, 18));
     trophyPoints.push_back(gsl::Vector3D(-0, 8.6f, -19));
@@ -40,6 +41,43 @@ BSplineCurve::~BSplineCurve()
     }
 }
 
+void BSplineCurve::updateSpline()
+{
+    int scaleNum = 5;
+
+    newControlPoints.clear();
+
+    newControlPoints.push_back(gsl::Vector3D(-4 * scaleNum, 0, -4 * scaleNum));
+    newControlPoints.push_back(gsl::Vector3D(-3 * scaleNum, 0, -3 * scaleNum));
+
+    if (!isTrophyPickedUp[0])
+    {
+        newControlPoints.push_back(gsl::Vector3D(18,  0, -19));
+    }
+    else if (!isTrophyPickedUp[1])
+    {
+        newControlPoints.push_back(gsl::Vector3D(18,  0,  18));
+    }
+    else if (!isTrophyPickedUp[2])
+    {
+        newControlPoints.push_back(gsl::Vector3D(-0, 0, -19));
+    }
+
+    newControlPoints.push_back(gsl::Vector3D( -3 * scaleNum, 0,  3 * scaleNum));
+    newControlPoints.push_back(gsl::Vector3D( -4 * scaleNum, 0,  4 * scaleNum));
+
+    createClampedKnots(degree, newControlPoints.size());
+}
+
+void BSplineCurve::addNewSpline()
+{
+    controlPoints.clear();
+    controlPoints = newControlPoints;
+    newPathChange = false;
+    addCurveToVertices(50);
+    init();
+}
+
 void BSplineCurve::createDefaultSplineCurve()
 {
     int scaleNum = 5;
@@ -62,18 +100,19 @@ void BSplineCurve::createDefaultSplineCurve()
 
 void BSplineCurve::addCurveToVertices(int subdivisions)
 {
+    mVertices.clear();
     gsl::Vector3D temp;
     Vertex tempVertex;
 
 
 
-    for (int i = 0; i < subdivisions; ++i)
+    for (int i = 0; i < subdivisions + 2; ++i)
     {
         temp = gsl::bSpline(controlPoints, knots, i/static_cast<float>(subdivisions), degree);
         tempVertex.set_xyz(temp);
         mVertices.push_back(tempVertex);
 
-        //qDebug() << tempVertex.get_xyz();
+        //qDebug() << i/static_cast<float>(subdivisions);
     }
 
 }
@@ -161,6 +200,12 @@ void BSplineCurve::createClampedKnots(int degree, int numberOfControlPoints)
 void BSplineCurve::eventEndOfSpline()
 {
     //qDebug() << "End of spline hit";
+    if (newPathChange)
+    {
+        updateSpline();
+        addNewSpline();
+        currentRenderWindow->updateSplineHeight(this);
+    }
 }
 
 void BSplineCurve::init()
@@ -218,6 +263,7 @@ bool BSplineCurve::getIsTrophyPickedUp(unsigned int index)
 void BSplineCurve::setTrophyStatus(bool isPicked, unsigned int index)
 {
     isTrophyPickedUp[index] = isPicked;
+    newPathChange = true;
 
 //    for (auto trophyPick : isTrophyPickedUp)
 //    {

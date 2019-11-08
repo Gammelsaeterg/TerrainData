@@ -45,6 +45,19 @@ RenderWindow::~RenderWindow()
 }
 
 /// Sets up the general OpenGL stuff and the buffers needed to render a triangle
+void RenderWindow::updateSplineHeight(VisualObject *temp)
+{
+    std::vector<gsl::Vector3D> tempLocs = static_cast<BSplineCurve*>(temp)->getSplineVerticeLocations();
+    std::vector<float> tempHeights;
+    float tempLoc;
+    for (auto locs : tempLocs)
+    {
+        tempLoc = getTerrainHeight(gsl::Vector3D(locs.getX(), 0.f, locs.getZ()));
+        tempHeights.push_back(tempLoc + 0.5f);
+    }
+    static_cast<BSplineCurve*>(temp)->setNewHeights(tempHeights);
+}
+
 void RenderWindow::init()
 {
     //Connect the gameloop timer to the render function:
@@ -109,6 +122,8 @@ void RenderWindow::init()
     //testing triangle surface class
     temp = new TriangleSurface();
     temp->init();
+    temp->mMatrix.setPosition(-20, 2.5, -20);
+    temp->mMatrix.scale(2);
     mVisualObjects.push_back(temp);
 
     //Moving gravity ball
@@ -218,17 +233,9 @@ void RenderWindow::init()
     // glPointSize(10.f);
 
     //Curve test
-    temp = new BSplineCurve(mMatrixUniform0);
-    std::vector<gsl::Vector3D> tempLocs = static_cast<BSplineCurve*>(temp)->getSplineVerticeLocations();
+    temp = new BSplineCurve(mMatrixUniform0, this);
     ////Visualize curve height------------------
-    std::vector<float> tempHeights;
-    float tempLoc;
-    for (auto locs : tempLocs)
-    {
-        tempLoc = getTerrainHeight(gsl::Vector3D(locs.getX(), 0.f, locs.getZ()));
-        tempHeights.push_back(tempLoc + 0.5f);
-    }
-    static_cast<BSplineCurve*>(temp)->setNewHeights(tempHeights);
+    updateSplineHeight(temp);
     ////Visualize end------------------
     temp->init();
     trophyPositions = static_cast<BSplineCurve*>(temp)->getTrophyLocations();
@@ -246,6 +253,13 @@ void RenderWindow::init()
 //    temp = new Trophy();
 //    temp->init();
 //    mVisualObjects.push_back(temp);
+
+    //testing triangle surface class
+    temp = new TriangleSurface();
+    temp->init();
+    temp->mMatrix.setPosition(-20, 3, 20);
+    temp->mMatrix.scale(2);
+    mVisualObjects.push_back(temp);
 }
 
 ///Called each frame - doing the rendering
@@ -558,7 +572,9 @@ void RenderWindow::checkIfPlayerIsCloseToTrophy()
             if (!(static_cast<BSplineCurve*>(mVisualObjects[4])->getIsTrophyPickedUp(i)))
             {
                 static_cast<BSplineCurve*>(mVisualObjects[4])->setTrophyStatus(true, i);
+                //updateSplineHeight(static_cast<BSplineCurve*>(mVisualObjects[4]));
                 qDebug() << "Trophy " << i << " picked up";
+
             }
         }
     }

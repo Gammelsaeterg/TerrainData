@@ -51,6 +51,8 @@ public:
     void inputMoveBall(ballDirection direction, float deltaTime);
     std::vector<gsl::Vector3D> trophyPositions;
     void checkIfPlayerIsCloseToTrophy();
+    void updateSplineHeight(VisualObject* temp);
+
 private slots:
     void render();
 
