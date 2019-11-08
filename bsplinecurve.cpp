@@ -75,7 +75,6 @@ void BSplineCurve::addNewSpline()
     controlPoints = newControlPoints;
     newPathChange = false;
     addCurveToVertices(50);
-    init();
 }
 
 void BSplineCurve::createDefaultSplineCurve()
@@ -205,6 +204,7 @@ void BSplineCurve::eventEndOfSpline()
         updateSpline();
         addNewSpline();
         currentRenderWindow->updateSplineHeight(this);
+        init();
     }
 }
 
