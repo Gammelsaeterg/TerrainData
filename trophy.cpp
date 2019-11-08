@@ -198,8 +198,8 @@ void Trophy::init() {
 
 void Trophy::draw()
 {
-   glBindVertexArray( mVAO );   
-   glDrawArrays(GL_TRIANGLES, 0, mVertices.size());//mVertices.size());
+//   glBindVertexArray( mVAO );
+//   glDrawArrays(GL_TRIANGLES, 0, mVertices.size());//mVertices.size());
 }
 
 void Trophy::draw(GLint mMatrixUniform)
@@ -207,6 +207,11 @@ void Trophy::draw(GLint mMatrixUniform)
     glBindVertexArray( mVAO );
     glUniformMatrix4fv( mMatrixUniform, 1, GL_TRUE, mMatrix.constData());
     glDrawArrays(GL_TRIANGLES, 0, mVertices.size());//mVertices.size());
+}
+
+void Trophy::clearAll()
+{
+    mVertices.clear();
 }
 
 //void Trophy::OnOverlapEvent(VisualObject *object)

@@ -12,6 +12,8 @@ public:
     void draw() override;
     void draw(GLint mMatrixUniform);
 
+    void clearAll();
+
 public slots:
     void OnOverlapEvent(VisualObject *object);
 };

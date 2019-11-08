@@ -25,8 +25,12 @@ public:
     virtual void init() override;
     virtual void draw() override;
 
-    std::vector<Trophy* > trophies;
+    std::vector<Trophy*> trophies;
+
     std::vector<bool> isTrophyPickedUp;
+    bool getIsTrophyPickedUp(unsigned int index);
+    void setTrophyStatus(bool isPicked, unsigned int index);
+
     std::vector<gsl::Vector3D> trophyPoints;
     std::vector<gsl::Vector3D> getTrophyLocations();
 

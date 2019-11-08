@@ -554,7 +554,12 @@ void RenderWindow::checkIfPlayerIsCloseToTrophy()
             - gsl::Vector3D(trophyPositions[i].getX(), 0.f, trophyPositions[i].getZ())).length()
             < 3.f)
         {
-            qDebug() << "Trophy " << i << " is overlapping";
+            //qDebug() << "Trophy " << i << " is overlapping";
+            if (!(static_cast<BSplineCurve*>(mVisualObjects[4])->getIsTrophyPickedUp(i)))
+            {
+                static_cast<BSplineCurve*>(mVisualObjects[4])->setTrophyStatus(true, i);
+                qDebug() << "Trophy " << i << " picked up";
+            }
         }
     }
 

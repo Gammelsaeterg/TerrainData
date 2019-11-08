@@ -110,6 +110,8 @@ void BSplineCurve::createTrophies()
     Trophy* tempTrophy2 = new Trophy;
     Trophy* tempTrophy3 = new Trophy;
 
+    trophies.clear(); //Clear before creation
+
     tempTrophy1->mMatrix.setPosition(18, 19.7f/2.f, -19);
     trophies.push_back(tempTrophy1);
 
@@ -198,11 +200,29 @@ void BSplineCurve::draw()
 
     for (unsigned int i = 0; i < trophies.size(); ++i)
     {
-        if (!isTrophyPickedUp[i])
+        if (isTrophyPickedUp[i])
+        {
+        }
+        else
         {
             trophies[i]->draw(mMatrixUniformTrophy);
         }
     }
+}
+
+bool BSplineCurve::getIsTrophyPickedUp(unsigned int index)
+{
+    return isTrophyPickedUp[index];
+}
+
+void BSplineCurve::setTrophyStatus(bool isPicked, unsigned int index)
+{
+    isTrophyPickedUp[index] = isPicked;
+
+//    for (auto trophyPick : isTrophyPickedUp)
+//    {
+//        qDebug() << trophyPick;
+//    }
 }
 
 std::vector<gsl::Vector3D> BSplineCurve::getTrophyLocations()
