@@ -130,7 +130,8 @@ void RenderWindow::init()
 
     //********************** Set up camera **********************
     mCurrentCamera = new Camera();
-    mCurrentCamera->setPosition(gsl::Vector3D(-0.f, -.5f, -31.f));
+    mCurrentCamera->setPosition(gsl::Vector3D(0 , -31 , -36));
+    mCurrentCamera->pitch(41);
 
     //********************** Terrain Data **************************
     gsl::LASLoader loader{"../TerrainData/Mountain.las"};
@@ -217,7 +218,7 @@ void RenderWindow::init()
     // glPointSize(10.f);
 
     //Curve test
-    temp = new BSplineCurve();
+    temp = new BSplineCurve(mMatrixUniform0);
     std::vector<gsl::Vector3D> tempLocs = static_cast<BSplineCurve*>(temp)->getSplineVerticeLocations();
     ////Visualize curve height------------------
     std::vector<float> tempHeights;

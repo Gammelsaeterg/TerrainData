@@ -10,6 +10,16 @@ BSplineCurve::BSplineCurve()
 
     createDefaultSplineCurve();
     addCurveToVertices(50);
+    createTrophies();
+}
+
+BSplineCurve::BSplineCurve(GLint mMatrixUniform)
+{
+    mMatrixUniformTrophy = mMatrixUniform;
+
+    createDefaultSplineCurve();
+    addCurveToVertices(50);
+    createTrophies();
 }
 
 BSplineCurve::~BSplineCurve()
@@ -89,17 +99,24 @@ gsl::Vector3D BSplineCurve::getCurrentSplineLocation(float t)
 
 void BSplineCurve::createTrophies()
 {
-    Trophy *tempTrophy = new Trophy();
+    Trophy* tempTrophy1 = new Trophy;
+    Trophy* tempTrophy2 = new Trophy;
+    Trophy* tempTrophy3 = new Trophy;
 
-    trophies.push_back(tempTrophy);
-    trophies.push_back(tempTrophy);
-    trophies.push_back(tempTrophy);
+    tempTrophy1->mMatrix.setPosition(18, 19.7f/2.f, -19);
+    trophies.push_back(tempTrophy1);
 
-    for (int i = 0; i < trophies.size(); ++i)
+    tempTrophy2->mMatrix.setPosition(18, 8.12f/2.f, 18);
+    trophies.push_back(tempTrophy2);
+
+    tempTrophy3->mMatrix.setPosition(-19, 3.9f/2.f, -19);
+    trophies.push_back(tempTrophy3);
+
+
+
+    for (auto trophy : trophies)
     {
-        trophies[i]->init();
-        trophies[i]->mMatrix.setPosition(trophyPoints[i].getX(), trophyPoints[i].getY(), trophyPoints[i].getZ());
-        //trophy->mMatrix.setToIdentity();
+        trophy->init();
     }
 }
 
@@ -174,6 +191,6 @@ void BSplineCurve::draw()
 
     for (auto trophy : trophies)
     {
-        trophy->draw();
+        trophy->draw(mMatrixUniformTrophy);
     }
 }

@@ -8,6 +8,7 @@ class BSplineCurve : public VisualObject
 {
 public:
     BSplineCurve();
+    BSplineCurve(GLint mMatrixUniform);
     ~BSplineCurve() override;
 
     void createDefaultSplineCurve();
@@ -24,8 +25,10 @@ public:
     virtual void init() override;
     virtual void draw() override;
 
-    std::vector<Trophy*> trophies;
+    std::vector<Trophy* > trophies;
     std::vector<gsl::Vector3D> trophyPoints;
+
+    GLint mMatrixUniformTrophy;
 
 private:
     std::vector<gsl::Vector3D> controlPoints;      // control points

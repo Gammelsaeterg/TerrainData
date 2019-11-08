@@ -56,6 +56,8 @@ void Camera::update()
 
     mViewMatrix = mPitchMatrix* mYawMatrix;
     mViewMatrix.translate(mPosition);
+
+    //qDebug() << mPitch;
 }
 
 void Camera::setPosition(const gsl::Vector3D &position)
