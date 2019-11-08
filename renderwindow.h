@@ -49,6 +49,8 @@ public:
 
     void moveBall(float deltaTime);
     void inputMoveBall(ballDirection direction, float deltaTime);
+    std::vector<gsl::Vector3D> trophyPositions;
+    void checkIfPlayerIsCloseToTrophy();
 private slots:
     void render();
 

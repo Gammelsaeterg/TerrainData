@@ -231,6 +231,7 @@ void RenderWindow::init()
     static_cast<BSplineCurve*>(temp)->setNewHeights(tempHeights);
     ////Visualize end------------------
     temp->init();
+    trophyPositions = static_cast<BSplineCurve*>(temp)->getTrophyLocations();
     mVisualObjects.push_back(temp);
 
     //NPC ball
@@ -309,6 +310,9 @@ void RenderWindow::render()
     {
         inputMoveBall(ballDirection::LEFT, deltaTime);
     }
+
+
+    checkIfPlayerIsCloseToTrophy();
 
     //Calculate framerate before
     // checkForGLerrors() because that takes a long time
@@ -500,6 +504,7 @@ void RenderWindow::moveBall(float deltaTime)
 
 void RenderWindow::inputMoveBall(ballDirection direction, float deltaTime)
 {
+    //qDebug() << mVisualObjects[3]->mMatrix.getPosition().getY();
     if (direction == ballDirection::UP)
     {
         mVisualObjects[3]->mMatrix.translate(gsl::Vector3D(0.f, 0.f, -5.f) * deltaTime);
@@ -538,6 +543,29 @@ void RenderWindow::inputMoveBall(ballDirection direction, float deltaTime)
     mVisualObjects[3]->mMatrix.setPosition(mVisualObjects[3]->mMatrix.getPosition().getX(),
             playerHeight + 1.f,
             mVisualObjects[3]->mMatrix.getPosition().getZ());
+}
+
+void RenderWindow::checkIfPlayerIsCloseToTrophy()
+{
+    for (unsigned int i = 0; i < trophyPositions.size(); ++i)
+    {
+        if ((
+              gsl::Vector3D(mVisualObjects[3]->mMatrix.getPosition().getX(), 0.f, mVisualObjects[3]->mMatrix.getPosition().getZ())
+            - gsl::Vector3D(trophyPositions[i].getX(), 0.f, trophyPositions[i].getZ())).length()
+            < 3.f)
+        {
+            qDebug() << "Trophy " << i << " is overlapping";
+        }
+    }
+
+//    qDebug() << (mVisualObjects[3]->mMatrix.getPosition() - trophyPositions[1]).length();
+
+//    for (auto trophyPos : trophyPositions)
+//    {
+//        qDebug() << trophyPos;
+//    }
+
+//    qDebug() << trophyPositions.size();
 }
 
 std::pair<bool, gsl::vec3> RenderWindow::isColliding(VisualObject* ball, float ballRadius)

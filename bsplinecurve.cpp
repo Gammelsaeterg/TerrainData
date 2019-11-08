@@ -6,7 +6,7 @@ BSplineCurve::BSplineCurve()
 {
     trophyPoints.push_back(gsl::Vector3D(18, 19.7f, -19));
     trophyPoints.push_back(gsl::Vector3D(18, 8.12f, 18));
-    trophyPoints.push_back(gsl::Vector3D(-19, 3.9f, -19));
+    trophyPoints.push_back(gsl::Vector3D(-0, 8.6f, -19));
 
     createDefaultSplineCurve();
     addCurveToVertices(50);
@@ -15,10 +15,17 @@ BSplineCurve::BSplineCurve()
 
 BSplineCurve::BSplineCurve(GLint mMatrixUniform)
 {
+    trophyPoints.push_back(gsl::Vector3D(18, 19.7f, -19));
+    trophyPoints.push_back(gsl::Vector3D(18, 8.12f, 18));
+    trophyPoints.push_back(gsl::Vector3D(-0, 8.6f, -19));
+
     mMatrixUniformTrophy = mMatrixUniform;
 
     createDefaultSplineCurve();
     addCurveToVertices(50);
+
+    isTrophyPickedUp.resize(3);
+
     createTrophies();
 }
 
@@ -44,7 +51,7 @@ void BSplineCurve::createDefaultSplineCurve()
     createTrophies();
     controlPoints.push_back(gsl::Vector3D(18,  0, -19));
     controlPoints.push_back(gsl::Vector3D(18,  0,  18));
-    controlPoints.push_back(gsl::Vector3D(-19, 0, -19));
+    controlPoints.push_back(gsl::Vector3D(-0, 0, -19));
 
     controlPoints.push_back(gsl::Vector3D( -3 * scaleNum, 0,  3 * scaleNum));
     controlPoints.push_back(gsl::Vector3D( -4 * scaleNum, 0,  4 * scaleNum));
@@ -109,7 +116,7 @@ void BSplineCurve::createTrophies()
     tempTrophy2->mMatrix.setPosition(18, 8.12f/2.f, 18);
     trophies.push_back(tempTrophy2);
 
-    tempTrophy3->mMatrix.setPosition(-19, 3.9f/2.f, -19);
+    tempTrophy3->mMatrix.setPosition(0, 8.6f, -19);
     trophies.push_back(tempTrophy3);
 
 
@@ -189,8 +196,16 @@ void BSplineCurve::draw()
     glBindVertexArray( mVAO );
     glDrawArrays(GL_LINE_STRIP, 0, mVertices.size());
 
-    for (auto trophy : trophies)
+    for (unsigned int i = 0; i < trophies.size(); ++i)
     {
-        trophy->draw(mMatrixUniformTrophy);
+        if (!isTrophyPickedUp[i])
+        {
+            trophies[i]->draw(mMatrixUniformTrophy);
+        }
     }
+}
+
+std::vector<gsl::Vector3D> BSplineCurve::getTrophyLocations()
+{
+    return trophyPoints;
 }

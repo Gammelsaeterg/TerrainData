@@ -26,7 +26,9 @@ public:
     virtual void draw() override;
 
     std::vector<Trophy* > trophies;
+    std::vector<bool> isTrophyPickedUp;
     std::vector<gsl::Vector3D> trophyPoints;
+    std::vector<gsl::Vector3D> getTrophyLocations();
 
     GLint mMatrixUniformTrophy;
 
