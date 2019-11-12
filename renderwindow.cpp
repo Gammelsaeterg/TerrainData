@@ -521,19 +521,19 @@ void RenderWindow::inputMoveBall(ballDirection direction, float deltaTime)
     //qDebug() << mVisualObjects[3]->mMatrix.getPosition().getY();
     if (direction == ballDirection::UP)
     {
-        mVisualObjects[3]->mMatrix.translate(gsl::Vector3D(0.f, 0.f, -5.f) * deltaTime);
+        mVisualObjects[3]->mMatrix.translate(gsl::Vector3D(0.f, 0.f, -15.f) * deltaTime);
     }
     if (direction == ballDirection::DOWN)
     {
-        mVisualObjects[3]->mMatrix.translate(gsl::Vector3D(0.f, 0.f, 5.f) * deltaTime);
+        mVisualObjects[3]->mMatrix.translate(gsl::Vector3D(0.f, 0.f, 15.f) * deltaTime);
     }
     if (direction == ballDirection::RIGHT)
     {
-        mVisualObjects[3]->mMatrix.translate(gsl::Vector3D(5.f, -0.f, -0.f) * deltaTime);
+        mVisualObjects[3]->mMatrix.translate(gsl::Vector3D(15.f, -0.f, -0.f) * deltaTime);
     }
     if (direction == ballDirection::LEFT)
     {
-        mVisualObjects[3]->mMatrix.translate(gsl::Vector3D(-5.f, 0.f, 0.f) * deltaTime);
+        mVisualObjects[3]->mMatrix.translate(gsl::Vector3D(-15.f, 0.f, 0.f) * deltaTime);
     }
 
     Triangle* currentTriangle = getBallToPlaneTriangle(gsl::Vector3D(mVisualObjects[3]->mMatrix.getPosition().getX(), 0.f, mVisualObjects[3]->mMatrix.getPosition().getZ()));
