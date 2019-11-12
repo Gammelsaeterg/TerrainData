@@ -48,7 +48,7 @@ void BSplineCurve::updateSpline()
     newControlPoints.clear();
 
     newControlPoints.push_back(gsl::Vector3D(-4 * scaleNum, 0, -4 * scaleNum));
-    newControlPoints.push_back(gsl::Vector3D(-3 * scaleNum, 0, -3 * scaleNum));
+    newControlPoints.push_back(gsl::Vector3D(-3 * scaleNum, 0, -4 * scaleNum));
 
     if (!isTrophyPickedUp[0])
     {
@@ -63,7 +63,7 @@ void BSplineCurve::updateSpline()
         newControlPoints.push_back(gsl::Vector3D(-0, 0, -19));
     }
 
-    newControlPoints.push_back(gsl::Vector3D( -3 * scaleNum, 0,  3 * scaleNum));
+    newControlPoints.push_back(gsl::Vector3D( -3 * scaleNum, 0,  4 * scaleNum));
     newControlPoints.push_back(gsl::Vector3D( -4 * scaleNum, 0,  4 * scaleNum));
 
     createClampedKnots(degree, newControlPoints.size());
@@ -82,7 +82,7 @@ void BSplineCurve::createDefaultSplineCurve()
     int scaleNum = 5;
 
     controlPoints.push_back(gsl::Vector3D(-4 * scaleNum, 0, -4 * scaleNum));
-    controlPoints.push_back(gsl::Vector3D(-3 * scaleNum, 0, -3 * scaleNum));
+    controlPoints.push_back(gsl::Vector3D(-3 * scaleNum, 0, -4 * scaleNum));
 
     //trophy coordinates //replace with a new trophy function
     createTrophies();
@@ -90,7 +90,7 @@ void BSplineCurve::createDefaultSplineCurve()
     controlPoints.push_back(gsl::Vector3D(18,  0,  18));
     controlPoints.push_back(gsl::Vector3D(-0, 0, -19));
 
-    controlPoints.push_back(gsl::Vector3D( -3 * scaleNum, 0,  3 * scaleNum));
+    controlPoints.push_back(gsl::Vector3D( -3 * scaleNum, 0,  4 * scaleNum));
     controlPoints.push_back(gsl::Vector3D( -4 * scaleNum, 0,  4 * scaleNum));
 
 

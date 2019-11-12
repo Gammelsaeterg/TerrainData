@@ -441,7 +441,7 @@ float RenderWindow::getTerrainHeight(gsl::Vector3D inLocation)
 void RenderWindow::moveBallAlongSpline(BSplineCurve *curve, VisualObject *objectToMove)
 {
     float deltaTime = mTimeStart.nsecsElapsed() / 10000000.f;
-    deltaTime = deltaTime / 10.f;
+    deltaTime = deltaTime / 5.f;
 
     if (goingForward)
     {
